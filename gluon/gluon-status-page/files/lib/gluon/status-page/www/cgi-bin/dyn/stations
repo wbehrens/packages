@@ -1,0 +1,50 @@
+#!/usr/bin/lua
+
+util = require 'luci.util'
+json = require 'luci.json'
+fs = require 'luci.fs'
+nixio = require 'nixio'
+
+function get_stations(base)
+  stations = {}
+
+  for _, station in ipairs(fs.dir(base)) do
+    if station:sub(1, 1) ~= '.' then
+
+      pcall(function()
+        local signal = tonumber(util.trim(fs.readfile(base .. station .. '/last_signal')))
+        stations[station] = { signal = signal }
+      end)
+    end
+  end
+
+  return stations
+end
+
+local ifname = os.getenv("QUERY_STRING")
+
+local list = util.exec('batctl if')
+local found = false
+for _, line in ipairs(util.split(list)) do
+  if ifname == line:match('^(.-):') then
+    found = true
+  end
+end
+
+if found == false or ifname == nil then
+  io.write("Status: 400 Bad Request\n\n")
+  os.exit(1)
+end
+
+io.write("Access-Control-Allow-Origin: *\n")
+io.write("Content-type: text/event-stream\n\n")
+
+local phy = util.trim(fs.readfile('/sys/class/net/' .. ifname .. '/phy80211/name'))
+local base = '/sys/kernel/debug/ieee80211/' .. phy .. '/netdev:' .. ifname .. '/stations/'
+
+while true do
+  local stations = json.encode(get_stations(base))
+  io.write("data: " .. stations .. "\n\n")
+  io.flush()
+  nixio.nanosleep(0, 20e6)
+end
