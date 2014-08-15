@@ -4,24 +4,26 @@ util = require 'luci.util'
 json = require 'luci.json'
 fs = require 'luci.fs'
 nixio = require 'nixio'
+iwinfo = require 'iwinfo'
 
-function get_stations(base)
-  stations = {}
+function badrequest()
+  io.write("Status: 400 Bad Request\n\n")
+  os.exit(1)
+end
 
-  for _, station in ipairs(fs.dir(base)) do
-    if station:sub(1, 1) ~= '.' then
+function get_stations(iw, ifname)
+  local stations = {}
 
-      pcall(function()
-        local signal = tonumber(util.trim(fs.readfile(base .. station .. '/last_signal')))
-        stations[station] = { signal = signal }
-      end)
-    end
+  for k, v in pairs(iw.assoclist(ifname)) do
+    stations[k:lower()] = v
   end
 
   return stations
 end
 
 local ifname = os.getenv("QUERY_STRING")
+
+if ifname == nil then badrequest() end
 
 local list = util.exec('batctl if')
 local found = false
@@ -31,19 +33,19 @@ for _, line in ipairs(util.split(list)) do
   end
 end
 
-if found == false or ifname == nil then
-  io.write("Status: 400 Bad Request\n\n")
-  os.exit(1)
-end
+if found == false then badrequest() end
+
+local wifitype = iwinfo.type(ifname)
+
+if wifitype == nil then badrequest() end
+
+local iw = iwinfo[wifitype]
 
 io.write("Access-Control-Allow-Origin: *\n")
 io.write("Content-type: text/event-stream\n\n")
 
-local phy = util.trim(fs.readfile('/sys/class/net/' .. ifname .. '/phy80211/name'))
-local base = '/sys/kernel/debug/ieee80211/' .. phy .. '/netdev:' .. ifname .. '/stations/'
-
 while true do
-  local stations = json.encode(get_stations(base))
+  local stations = json.encode(get_stations(iw, ifname))
   io.write("data: " .. stations .. "\n\n")
   io.flush()
   nixio.nanosleep(0, 20e6)
