@@ -1,0 +1,37 @@
+body {
+  background: #171d25;
+  font-family: Droid Sans, Arial, sans;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+}
+
+.main {
+  max-width: 30em;
+  background: #000;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+canvas.signal-history {
+  border: 2px solid #113858;
+  margin-top: 0.5em;
+}
+
+ul.list-neighbour {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul.list-neighbour h3 {
+  font-size: 10pt;
+  margin: 0;
+}
+
+ul.list-neighbour li {
+  padding: 1em 1em;
+  border-width: 1px 0;
+  border-color: #113858;
+  border-style: solid;
+  border-collapse: collapse;
+}
