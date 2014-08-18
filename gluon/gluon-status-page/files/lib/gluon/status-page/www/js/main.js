@@ -96,31 +96,40 @@ require(["baconjs", "getJSON", "helper", "streams", "gui"], function(Bacon, getJ
     var stations = []
     for (var ifname in interfaces) {
       var stream = new Streams.stations(node.ip, ifname);
-      stream = stream.map(function (d) { return [ifname, d] });
-      stations.push(stream.toProperty([]));
+      stream = stream.map(
+        function (d) {
+          for (var station in d)
+            d[station].ifname = ifname;
+
+          return d;
+        });
+      stations.push(stream.toProperty({}));
     }
 
-    var stream = Bacon.combineAsArray(stations).map(function (d) {
+    var wifiStream = Bacon.combineAsArray(stations).map(function (d) {
       return d.reduce(function (p, c) {
-        if (c[0])
-          p[c[0]] = c[1];
+        for (var station in c)
+          p[station] = c[station];
 
         return p;
       }, {});
     });
 
-    var stream2 = new Streams.batadv(node.ip);
+    var batadvStream = new Streams.batadv(node.ip);
 
-    var stream3 = stream.toProperty()
-                        .combine(stream2.toProperty(), combineWifiBatadv)
-                        .combine(querier.toProperty(), combineWithNodes)
-                        .scan({ internal: { asked: []
-                                          }
-                              , external: { neighbours: {}
-                                          , nodes: {}
-                                          }
-                              }, foldNeighbours(bus))
-                        .map(".external");
+    var stream3 = wifiStream.toProperty()
+                    .combine(batadvStream.toProperty(), combineWifiBatadv)
+
+    stream3 = Bacon.combineTemplate({ stations: stream3
+                                    , nodes: querier.toProperty()
+                                    })
+                    .scan({ internal: { asked: []
+                                      }
+                          , external: { neighbours: {}
+                                      , nodes: {}
+                                      }
+                          }, foldNeighbours(bus))
+                    .map(".external");
 
     foo = stream3.onValue(gui.update);
   }
@@ -153,28 +162,20 @@ require(["baconjs", "getJSON", "helper", "streams", "gui"], function(Bacon, getJ
         return (now - d.timestamp) < 5 * 1000;
       });
 
-      for (var ifname in b.stations) {
-        for (var station in b.stations[ifname]) {
-          if ("node" in b.stations[ifname][station]) {
-            continue;
-          } else if (station in b.nodes.macs) {
-            b.stations[ifname][station].nodeId = b.nodes.macs[station];
-          } else if (!haveAsked(a.internal.asked, station)) {
-            a.internal.asked.push({ station: station
-                                  , timestamp: new Date().getTime()
-                                  });
-            toAsk.push({ station: station
-                       , ifname: ifname
-                       })
-          }
+      for (var station in b.stations) {
+        if ("node" in b.stations[station]) {
+          continue;
+        } else if (station in b.nodes.macs) {
+          b.stations[station].nodeId = b.nodes.macs[station];
+        } else if (!haveAsked(a.internal.asked, station)) {
+          a.internal.asked.push({ station: station
+                                , timestamp: new Date().getTime()
+                                });
+          toAsk.push(b.stations[station].ifname);
         }
       }
 
-      toAsk = arrayNub(toAsk.reduce(function (a, b) {
-        return a.concat(b.ifname);
-      }, []))
-
-      toAsk.forEach(bus.push)
+      arrayNub(toAsk).forEach(bus.push);
 
       a.external.neighbours = b.stations;
       a.external.nodes = b.nodes.nodes;
@@ -200,28 +201,15 @@ require(["baconjs", "getJSON", "helper", "streams", "gui"], function(Bacon, getJ
   }
 
   function combineWifiBatadv(wifi, batadv) {
-    var batadv = batadvToDict(batadv);
+    for (var station in batadv) {
+      if (!(station in wifi))
+        wifi[station] = {}
 
-    for (var ifname in batadv) {
-      if (!(ifname in wifi))
-        wifi[ifname] = {}
-
-      for (var station in batadv[ifname]) {
-        if (!(station in wifi[ifname]))
-          wifi[ifname][station] = {}
-
-        for (var a in batadv[ifname][station])
-          wifi[ifname][station][a] = batadv[ifname][station][a];
-        }
-    }
+      for (var a in batadv[station])
+        wifi[station][a] = batadv[station][a];
+      }
 
     return wifi;
-  }
-
-  function combineWithNodes(stations, nodes) {
-    return { stations: stations
-           , nodes: nodes
-           };
   }
 
   statuspage()

@@ -31,67 +31,65 @@ define(['signalgraph'], function (SignalGraph) {
 
     this.update = function (d) {
       var stations = {};
-      for (var ifname in d.neighbours) {
-        for (var station in d.neighbours[ifname]) {
-          if ('signal' in d.neighbours[ifname][station])
-            stations[station] = null;
+      for (var station in d.neighbours) {
+        if ('signal' in d.neighbours[station])
+          stations[station] = null;
 
-          if (!(station in neighboursList)) {
-            var el = document.createElement("li");
-            var hostname = document.createElement("h3");
-            el.appendChild(hostname);
-            var div = document.createElement("div");
-            var canvas = document.createElement("canvas");
-            neighbours.appendChild(el);
-            el.appendChild(div);
-            canvas.setAttribute("class", "signal-history");
-            canvas.setAttribute("width", div.clientWidth);
-            canvas.setAttribute("height", "100");
-            div.appendChild(canvas);
+        if (!(station in neighboursList)) {
+          var el = document.createElement("li");
+          var hostname = document.createElement("h3");
+          el.appendChild(hostname);
+          var div = document.createElement("div");
+          var canvas = document.createElement("canvas");
+          neighbours.appendChild(el);
+          el.appendChild(div);
+          canvas.setAttribute("class", "signal-history");
+          canvas.setAttribute("width", div.clientWidth);
+          canvas.setAttribute("height", "100");
+          div.appendChild(canvas);
 
-            var chart = new SignalGraph(canvas, -100, 0, 15);
+          var chart = new SignalGraph(canvas, -100, 0, 15);
 
-            neighboursList[station] = { signal: chart
-                                      , hostname: hostname
-                                      , el: el
-                                      , infoSet: false
-                                      }
-          } else {
-            var signal = d.neighbours[ifname][station].signal;
-            var inactive = d.neighbours[ifname][station].inactive;
+          neighboursList[station] = { signal: chart
+                                    , hostname: hostname
+                                    , el: el
+                                    , infoSet: false
+                                    }
+        } else {
+          var signal = d.neighbours[station].signal;
+          var inactive = d.neighbours[station].inactive;
 
-            if (inactive > 200)
-              signal = null;
+          if (inactive > 200)
+            signal = null;
 
-            neighboursList[station].signal(signal);
+          neighboursList[station].signal(signal);
 
-            if (!neighboursList[station].infoSet) {
-              var hostname = neighboursList[station].hostname;
+          if (!neighboursList[station].infoSet) {
+            var hostname = neighboursList[station].hostname;
 
-              if ("nodeId" in d.neighbours[ifname][station]) {
-                neighboursList[station].infoSet = true;
+            if ("nodeId" in d.neighbours[station]) {
+              neighboursList[station].infoSet = true;
 
-                var nodeId = d.neighbours[ifname][station].nodeId;
-                var link = document.createElement("a");
+              var nodeId = d.neighbours[station].nodeId;
+              var link = document.createElement("a");
 
-                link.textContent = d.nodes[nodeId].hostname;
-                link.setAttribute("href", "#");
-                link.onclick = function () {
-                  moveBus.push(d.nodes[nodeId]);
-                  return false;
-                }
-
-                while (hostname.firstChild)
-                  hostname.removeChild(hostname.firstChild);
-
-                hostname.appendChild(link);
-              } else {
-                hostname.textContent = station;
+              link.textContent = d.nodes[nodeId].hostname;
+              link.setAttribute("href", "#");
+              link.onclick = function () {
+                moveBus.push(d.nodes[nodeId]);
+                return false;
               }
+
+              while (hostname.firstChild)
+                hostname.removeChild(hostname.firstChild);
+
+              hostname.appendChild(link);
+            } else {
+              hostname.textContent = station;
             }
           }
         }
-      } 
+      }
 
       for (var station in neighboursList) {
         if (!(station in stations)) {
