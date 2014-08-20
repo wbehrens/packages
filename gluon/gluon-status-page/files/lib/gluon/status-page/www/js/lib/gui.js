@@ -1,35 +1,38 @@
-define(['lib/signalgraph'], function (SignalGraph) {
-  function nodeInfoBlock() {
-    var div = document.createElement("div");
-
-    return this;
-  }
+define([ 'lib/signalgraph'
+       , 'lib/gui/nodeinfo'
+       ], function (SignalGraph, NodeInfo) {
 
   return function (document, moveBus) {
+    var header = document.createElement("header");
+    var h1 = document.createElement("h1");
+    h1.textContent = "Statuspage";
+    header.appendChild(h1);
+
+    var content = document.createElement("section");
+
     var main = document.createElement("div");
     main.setAttribute("class", "main");
-    var nodeinfo = document.createElement("div");
-    nodeinfo.setAttribute("class", "nodeinfo");
-    var header = document.createElement("h1");
-    var model = document.createElement("p");
+
+    var nodeInfoBlock = new NodeInfo();
+
     var neighbours = document.createElement("ul");
     neighbours.setAttribute("class", "list-neighbour");
 
     var neighboursList = {};
 
-    nodeinfo.appendChild(header);
-    nodeinfo.appendChild(model);
-    main.appendChild(nodeinfo);
-    main.appendChild(neighbours);
+    main.appendChild(header);
+    content.appendChild(nodeInfoBlock);
+    content.appendChild(neighbours);
+    main.appendChild(content);
     document.body.appendChild(main);
 
     this.nodeChanged = function (nodeInfo) {
-      header.textContent = nodeInfo.hostname;
-      model.textContent = nodeInfo.hardware.model;
       neighboursList = {};
 
       while (neighbours.firstChild)
         neighbours.removeChild(neighbours.firstChild);
+
+      nodeInfoBlock.update(nodeInfo);
     }
 
     this.update = function (d) {

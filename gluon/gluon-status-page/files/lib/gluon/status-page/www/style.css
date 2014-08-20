@@ -13,7 +13,7 @@ body {
   box-shadow: 0pt 5pt 20pt rgba(0, 0, 0, 0.19), 0pt 3pt 6pt rgba(0, 0, 0, 0.23);
 }
 
-.nodeinfo {
+header {
   padding: 24pt 16pt;
   border-bottom: 1pt solid rgba(0, 0, 0, 0.15);
   background: #dc0067;
@@ -30,13 +30,42 @@ canvas.signal-history {
   vertical-align: bottom;
 }
 
+section {
+  display: flex;
+}
+
+.nodeinfo {
+  flex: 1;
+  padding: 16pt;
+  box-sizing: border-box;
+  border-right: 1pt solid rgba(0, 0, 0, 0.12);
+}
+
+dl {
+  margin: 4pt 0;
+}
+
+dt {
+  font-size: 11pt;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.87);
+  line-height: 16pt;
+}
+
+dd {
+  font-size: 11pt;
+  font-weight: normal;
+  color: rgba(0, 0, 0, 0.54);
+  padding-bottom: 0.7em;
+}
+
 .list-neighbour {
+  flex: 1;
+  box-sizing: border-box;
   list-style: none;
   padding-left: 0;
   padding: 0pt;
-  background: #fff;
-  margin-right: -1pt;
-  margin-bottom: -1pt;
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .list-neighbour h3 {
@@ -46,18 +75,14 @@ canvas.signal-history {
 }
 
 .list-neighbour li {
-  width: 50%;
+  width: 100%;
   box-sizing: border-box;
   padding: 8pt;
   display: inline-block;
-  border-width: 0 1pt 1pt 0;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.12);
-}
-
-.list-neighbour li .wrapper {
   background: #fff;
   color: #666;
+  box-shadow: 0pt 1.5pt 6pt -3pt rgba(0, 0, 0, 0.16), 0pt 1.5pt 6pt -3pt rgba(0, 0, 0, 0.23);
+  border-bottom: 1pt solid rgba(0, 0, 0, 0.12);
 }
 
 .list-neighbour .info {
@@ -83,6 +108,15 @@ a {
 }
 
 @media only screen and (max-width: 700px) {
+  section {
+    display: block;
+  }
+
+  .nodeinfo {
+    border-right; none;
+    border-bottom: 1pt solid rgba(0, 0, 0, 0.12);
+  }
+
   .list-neighbour li {
     width: 100%;
   }

@@ -29,16 +29,16 @@ require([ "vendor/bacon"
 
   moveBus.onValue(function (nodeinfo) {
     console.log("Moving to", nodeinfo);
+    if (foo)
+      foo();
+
+    gui.nodeChanged(nodeinfo);
+
     var addresses = nodeinfo.network.addresses.filter(function (d) { return !/^fe80:/.test(d) });
     Promise.race(addresses.map(tryIp)).then(nodeBus.push);
   });
 
   nodeBus.onValue(function(current) {
-    if (foo)
-      foo();
-
-    gui.nodeChanged(current.nodeinfo);
-
     var stream = new NeighbourStream(current);
     foo = stream.onValue(gui.update);
   });
