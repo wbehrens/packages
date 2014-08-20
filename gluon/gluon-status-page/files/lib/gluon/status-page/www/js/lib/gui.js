@@ -1,4 +1,4 @@
-define(['signalgraph'], function (SignalGraph) {
+define(['lib/signalgraph'], function (SignalGraph) {
   function nodeInfoBlock() {
     var div = document.createElement("div");
 

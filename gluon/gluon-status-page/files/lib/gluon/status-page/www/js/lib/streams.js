@@ -1,4 +1,4 @@
-define(["baconjs", "helper"], function(Bacon, Helper) {
+define(["vendor/bacon", "lib/helper"], function(Bacon, Helper) {
   function nodeInfo(ip, ifname) {
     return Bacon.fromBinder(function (sink) {
       var url = Helper.buildUrl(ip, "dyn/neighbours-nodeinfo", ifname);

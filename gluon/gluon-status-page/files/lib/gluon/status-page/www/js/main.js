@@ -1,15 +1,10 @@
-require.config({
-    paths: { baconjs: 'vendor/bacon'
-           , getJSON: 'lib/getJSON'
-           , helper: 'lib/helper'
-           , streams: 'lib/streams'
-           , gui: 'lib/gui'
-           , signalgraph: 'lib/signalgraph'
-           }
-});
-
-require(["baconjs", "getJSON", "helper", "streams", "gui"], function(Bacon, getJSON, Helper, Streams, GUI) {
-  var bootstrapUrl = "http://[fdef:ffc0:3dd7::92f6:52ff:fe82:602]/cgi-bin/nodeinfo";
+require([ "vendor/bacon"
+        , "lib/getJSON"
+        , "lib/helper"
+        , "lib/streams"
+        , "lib/gui"
+        ], function(Bacon, getJSON, Helper, Streams, GUI) {
+  var bootstrapUrl = "http://[fdef:ffc0:3dd7:0:76ea:3aff:febe:223e]/cgi-bin/nodeinfo";
 
   var gui;
 
