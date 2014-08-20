@@ -7,25 +7,21 @@ define([ "vendor/bacon"
     return Bacon.fromBinder(function (sink) {
       function magic(interfaces) {
         var bus = new Bacon.Bus();
-
         var querier = nodeQuerier(bus);
+        querier.map(".nodeInfo").onValue(mgmtBus.pushEvent("nodeinfo"));
 
-        querier.onValue(mgmtBus.pushEvent("nodeinfo"));
-
-        querier = querier.scan({ nodes: {}
-                               , macs: {}
-                               }, foldQuerier);
+        macsToNodeId = querier.scan({}, foldMacs);
 
         var stations = [];
         for (var ifname in interfaces) {
           var stream = new Streams.stations(ip, ifname);
-          stream = stream.map(
-            function (d) {
-              for (var station in d)
-                d[station].ifname = ifname;
+          stream = stream.map(function (d) {
+            for (var station in d)
+              d[station].ifname = ifname;
 
-              return d;
-            });
+            return d;
+          });
+
           stations.push(stream.toProperty({}));
         }
 
@@ -43,15 +39,10 @@ define([ "vendor/bacon"
         var stream3 = wifiStream.combine(batadvStream.toProperty({}), combineWifiBatadv)
 
         stream3 = Bacon.combineTemplate({ stations: stream3
-                                        , nodes: querier.toProperty()
+                                        , macs: macsToNodeId
                                         })
-                        .scan({ internal: { asked: []
-                                          }
-                              , external: { neighbours: {}
-                                          , nodes: {}
-                                          }
-                              }, foldNeighbours(bus))
-                        .map(".external");
+                        .scan({ asked: {}, neighbours: {}}, foldNeighbours(bus))
+                        .map(".neighbours");
 
         stream3.onValue(sink);
       }
@@ -61,68 +52,46 @@ define([ "vendor/bacon"
 
         bus.onValue(function (ifname) {
           var stream = Streams.nodeInfo(ip, ifname);
-          out.plug(stream.scan({}, addNode));
+          out.plug(stream.map(function (d) {
+            return { "ifname": ifname
+                   , "nodeInfo": d
+                   };
+          }));
         });
 
         return out;
       }
 
-      function addNode(a, b) {
-        if (!(b.node_id in a))
-          a[b.node_id] = b;
+      function foldMacs(a, node) {
+        node.nodeInfo.network.mesh_interfaces.forEach(function (mac) {
+          a[mac] = node.nodeInfo.node_id;
+        });
 
         return a;
-      }
-
-      function foldQuerier(a, nodes) {
-        for (var nodeId in nodes) {
-          if (!(nodeId in a.nodes))
-            a.nodes[nodeId] = nodes[nodeId];
-
-          var macs = nodes[nodeId].network.mesh_interfaces;
-
-          macs.forEach(function (mac) {
-            if (!(mac in a.macs))
-              a.macs[mac] = nodeId;
-          });
-        }
-
-        return a;
-      }
-
-      function haveAsked(a, s) {
-        return a.filter(function (d) {
-          return d.station == s;
-        }).length > 0;
       }
 
       function foldNeighbours(bus) {
         return function(a, b) {
-          var toAsk = [];
-
           var now = new Date().getTime();
 
-          a.internal.asked = a.internal.asked.filter(function (d) {
-            return (now - d.timestamp) < 5 * 1000;
-          });
+          var toAsk = new Bacon.Bus();
+          bus.plug(toAsk.skipDuplicates());
 
-          for (var station in b.stations) {
-            if ("node" in b.stations[station]) {
-              continue;
-            } else if (station in b.nodes.macs) {
-              b.stations[station].nodeId = b.nodes.macs[station];
-            } else if (!haveAsked(a.internal.asked, station)) {
-              a.internal.asked.push({ station: station
-                                    , timestamp: new Date().getTime()
-                                    });
+          for (var mac in a.asked)
+            if (now - a.asked[mac] > 5 * 1000)
+              delete a.asked[mac];
+
+          for (var station in b.stations)
+            if (station in b.macs) {
+              b.stations[station].nodeId = b.macs[station];
+            } else if (!(station in a.asked)) {
+              a.asked[station] = now;
               toAsk.push(b.stations[station].ifname);
             }
-          }
 
-          bus.plug(Bacon.fromArray(toAsk).skipDuplicates());
+          toAsk.end();
 
-          a.external.neighbours = b.stations;
-          a.external.nodes = b.nodes.nodes;
+          a.neighbours = b.stations;
 
           return a;
         }

@@ -37,8 +37,6 @@ require([ "vendor/bacon"
 
   var gui = new GUI(document, mgmtBus);
 
-  var stopStream;
-
   function tryIp(ip) {
     return Helper.request(ip, "nodeinfo").then(function(d) { return ip });
   }
@@ -46,14 +44,14 @@ require([ "vendor/bacon"
   mgmtBus.onEvent({ "goto": gotoNode });
 
   function gotoNode(nodeInfo) {
-    if (stopStream)
-      stopStream();
-
     var addresses = nodeInfo.network.addresses.filter(function (d) { return !/^fe80:/.test(d) });
     Promise.race(addresses.map(tryIp)).then(mgmtBus.pushEvent("arrived"), mgmtBus.pushEvent("gotoFailed"));
   }
 
   mgmtBus.log("mgmt");
 
-  Helper.getJSON(bootstrapUrl).then(mgmtBus.pushEvent("goto"));
+  Helper.getJSON(bootstrapUrl).then(function (d) {
+    mgmtBus.pushEvent("nodeinfo", d);
+    mgmtBus.pushEvent("goto", d);
+  });
 })

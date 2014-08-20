@@ -4,6 +4,8 @@ define([ 'lib/signalgraph'
        ], function (SignalGraph, NodeInfo, NeighbourStream) {
 
   return function (document, mgmtBus) {
+    var nodes = {};
+
     var header = document.createElement("header");
     var h1 = document.createElement("h1");
     h1.textContent = "Statuspage";
@@ -53,10 +55,14 @@ define([ 'lib/signalgraph'
       stopNeighbourStream = stream.onValue(updateNeighbours);
     }
 
+    function newNode(nodeInfo) {
+      nodes[nodeInfo.node_id] = nodeInfo;
+    }
+
     function updateNeighbours(d) {
       var stations = {};
-      for (var station in d.neighbours) {
-        if ('signal' in d.neighbours[station])
+      for (var station in d) {
+        if ('signal' in d[station])
           stations[station] = null;
 
         if (!(station in neighboursList)) {
@@ -91,10 +97,10 @@ define([ 'lib/signalgraph'
                                     , info: p
                                     }
         } else {
-          var signal = d.neighbours[station].signal;
-          var inactive = d.neighbours[station].inactive;
+          var signal = d[station].signal;
+          var inactive = d[station].inactive;
 
-          var neighbour = d.neighbours[station];
+          var neighbour = d[station];
 
           if (inactive > 200)
             signal = null;
@@ -105,17 +111,17 @@ define([ 'lib/signalgraph'
             var hostname = neighboursList[station].hostname;
             var info = neighboursList[station].info;
 
-            if ("nodeId" in d.neighbours[station]) {
+            if ("nodeId" in d[station] && d[station].nodeId in nodes) {
               neighboursList[station].infoSet = true;
 
-              var nodeId = d.neighbours[station].nodeId;
+              var nodeId = d[station].nodeId;
               var link = document.createElement("a");
-              var node = d.nodes[nodeId];
+              var node = nodes[nodeId];
 
               link.textContent = node.hostname;
               link.setAttribute("href", "#");
               link.onclick = function () {
-                mgmtBus.pushEvent("goto", d.nodes[nodeId]);
+                mgmtBus.pushEvent("goto", nodes[nodeId]);
                 return false;
               }
 
@@ -145,6 +151,7 @@ define([ 'lib/signalgraph'
 
     mgmtBus.onEvent({ "goto": nodeChanged
                     , "arrived": nodeArrived
+                    , "nodeinfo": newNode
                     });
 
     return this;
