@@ -44,11 +44,10 @@ define(['lib/signalgraph'], function (SignalGraph) {
           neighbours.appendChild(el);
           el.appendChild(div);
           canvas.setAttribute("class", "signal-history");
-          canvas.setAttribute("width", div.clientWidth);
           canvas.setAttribute("height", "100");
           div.appendChild(canvas);
+          var chart = new SignalGraph(canvas, -100, 0, 5, true);
 
-          var chart = new SignalGraph(canvas, -100, 0, 15);
 
           neighboursList[station] = { signal: chart
                                     , hostname: hostname

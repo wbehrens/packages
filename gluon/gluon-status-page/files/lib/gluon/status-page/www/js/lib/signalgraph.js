@@ -1,22 +1,24 @@
 define(function () {
-  return function (canvas, min, max, holdtime) {
+  return function (canvas, min, max, holdtime, autowidth) {
     var i = 0;
     var v = null;
 
-    var ctx = canvas.getContext('2d');
-    var canvasWidth = canvas.width;
-    var canvasHeight = canvas.height;
-    var canvasData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
 
-    var graphWidth = canvasWidth - 20;
-    
-    window.requestAnimationFrame(step);
-    
+    var ctx = canvas.getContext('2d');
+    var canvasData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+    var graphWidth;
+
     var last = 0;
 
     var fadei = 0;
     var peakHold = null;
     var peakTime = null;
+
+    resize();
+
+    window.addEventListener('resize', resize, false);
+    window.requestAnimationFrame(step);
 
     function peak() {
       if (v != null)
@@ -26,15 +28,16 @@ define(function () {
         }
 
       ctx.fillStyle = "#13B6F4";
-      ctx.clearRect(0, 0, 18, canvasHeight);
+      ctx.clearRect(0, 0, 18, canvas.height);
+      ctx.fillRect(0, 0, 18, canvas.height);
 
       if (v) {
-        var x = Math.round(scale(v, min, max, canvasHeight));
-        ctx.fillRect(0, x, 18, canvasHeight);
+        var x = Math.round(scale(v, min, max, canvas.height));
+        ctx.fillRect(0, x, 18, canvas.height);
       }
 
       ctx.fillStyle = "#ff0000";
-      ctx.fillRect(0, Math.round(scale(peakHold, min, max, canvasHeight)) - 2, 18, 2);
+      ctx.fillRect(0, Math.round(scale(peakHold, min, max, canvas.height)) - 3, 18, 3);
     }
 
     function step(timestamp) {
@@ -63,9 +66,9 @@ define(function () {
 
     function draw() {
       ctx.save();
-      ctx.rect(20, 0, canvasWidth, canvasHeight);
+      ctx.rect(20, 0, canvas.width, canvas.height);
       ctx.clip();
-      var x = Math.round(scale(v, min, max, canvasHeight));
+      var x = Math.round(scale(v, min, max, canvas.height));
       if (x)
         drawPixel(i + 20, x);
 
@@ -92,7 +95,7 @@ define(function () {
     }
     
     function fade() {
-      var lastImage = ctx.getImageData(19, 0, graphWidth + 1, canvasHeight);
+      var lastImage = ctx.getImageData(19, 0, graphWidth + 1, canvas.height);
       var pixelData = lastImage.data;
       
       for (var i = 0; i < pixelData.length; i += 4) {
@@ -105,7 +108,15 @@ define(function () {
     function scale(n, min, max, height) {
       return (1 - (n-min)/(max-min)) * height; 
     }
-    
+
+    function resize() {
+      var newWidth = canvas.parentNode.clientWidth;
+      var lastImage = ctx.getImageData(0, 0, newWidth, canvas.height);
+      canvas.width = newWidth;
+      graphWidth = canvas.width - 20;
+      ctx.putImageData(lastImage, 0, 0);
+    }
+
     return function (n) {
       v = n;
     }
