@@ -112,6 +112,10 @@ define(function () {
 
     function resize() {
       var newWidth = canvas.parentNode.clientWidth;
+
+      if (newWidth == 0)
+        return;
+
       var lastImage = ctx.getImageData(0, 0, newWidth, canvas.height);
       canvas.width = newWidth;
       graphWidth = canvas.width - 20;
