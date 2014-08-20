@@ -1,7 +1,7 @@
 define(function () {
   return function () {
     var el = document.createElement("div");
-    el.setAttribute("class", "nodeinfo");
+    el.className = "nodeinfo";
     el.update = update;
 
     function flattenDict(o, n, parentKey) {

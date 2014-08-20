@@ -14,12 +14,12 @@ define([ 'lib/signalgraph'
     var content = document.createElement("section");
 
     var main = document.createElement("div");
-    main.setAttribute("class", "main");
+    main.className ="main";
 
     var nodeInfoBlock = new NodeInfo();
 
     var neighboursDiv = document.createElement("div");
-    neighboursDiv.setAttribute("class", "list-neighbour");
+    neighboursDiv.className ="list-neighbour";
 
     var h2 = document.createElement("h2");
     h2.textContent = "Nachbarknoten";
@@ -31,7 +31,7 @@ define([ 'lib/signalgraph'
     var neighboursList = {};
 
     var nodesList = document.createElement("ul");
-    nodesList.setAttribute("class", "list-nodes");
+    nodesList.className ="list-nodes";
 
     main.appendChild(header);
     content.appendChild(nodeInfoBlock);
@@ -86,19 +86,19 @@ define([ 'lib/signalgraph'
         if (!(station in neighboursList)) {
           var el = document.createElement("li");
           var wrapper = document.createElement("div");
-          wrapper.setAttribute("class", "wrapper");
+          wrapper.className ="wrapper";
 
           var canvas = document.createElement("canvas");
           el.appendChild(wrapper);
           wrapper.appendChild(canvas);
           neighbours.appendChild(el);
 
-          canvas.setAttribute("class", "signal-history");
-          canvas.setAttribute("height", "100");
+          canvas.className ="signal-history";
+          canvas.height = 100;
           var chart = new SignalGraph(canvas, -100, 0, 5, true);
 
           var info = document.createElement("div");
-          info.setAttribute("class", "info");
+          info.className ="info";
 
           var hostname = document.createElement("h3");
           info.appendChild(hostname);
@@ -137,7 +137,7 @@ define([ 'lib/signalgraph'
               var node = nodes[nodeId];
 
               link.textContent = node.hostname;
-              link.setAttribute("href", "#");
+              link.href = "#";
               link.onclick = function () {
                 mgmtBus.pushEvent("goto", nodes[nodeId]);
                 return false;
