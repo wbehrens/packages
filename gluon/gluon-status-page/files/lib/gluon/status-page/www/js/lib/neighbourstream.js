@@ -3,19 +3,19 @@ define([ "vendor/bacon"
        , "lib/streams"
        ], function(Bacon, Helper, Streams) {
 
-  function mkNeighbourStream(current) {
+  function mkNeighbourStream(ip) {
     var out = new Bacon.Bus();
-    Helper.request(current.ip, "interfaces").then(function (d) {
-      magic(current, d, out);
+    Helper.request(ip, "interfaces").then(function (d) {
+      magic(ip, d, out);
     });
 
     return out;
   }
 
-  function magic(node, interfaces, output) {
+  function magic(ip, interfaces, output) {
     var bus = new Bacon.Bus();
 
-    var querier = nodeQuerier(node, bus);
+    var querier = nodeQuerier(ip, bus);
 
     querier = querier.scan({ nodes: {}
                            , macs: {}
@@ -23,7 +23,7 @@ define([ "vendor/bacon"
 
     var stations = []
     for (var ifname in interfaces) {
-      var stream = new Streams.stations(node.ip, ifname);
+      var stream = new Streams.stations(ip, ifname);
       stream = stream.map(
         function (d) {
           for (var station in d)
@@ -43,7 +43,7 @@ define([ "vendor/bacon"
       }, {});
     });
 
-    var batadvStream = new Streams.batadv(node.ip);
+    var batadvStream = new Streams.batadv(ip);
 
     var stream3 = wifiStream.combine(batadvStream.toProperty({}), combineWifiBatadv)
 
@@ -63,11 +63,11 @@ define([ "vendor/bacon"
   }
 
 
-  function nodeQuerier(node, bus) {
+  function nodeQuerier(ip, bus) {
     var out = new Bacon.Bus();
   
     bus.onValue(function (ifname) {
-      var stream = Streams.nodeInfo(node.ip, ifname);
+      var stream = Streams.nodeInfo(ip, ifname);
       out.plug(stream.scan({}, addNode));
     });
 
