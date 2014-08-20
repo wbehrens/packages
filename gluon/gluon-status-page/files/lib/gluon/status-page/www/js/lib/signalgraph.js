@@ -27,22 +27,23 @@ define(function () {
           peakTime = new Date().getTime();
         }
 
-      ctx.fillStyle = "#13B6F4";
       ctx.clearRect(0, 0, 18, canvas.height);
+      ctx.fillStyle = "rgba(255, 180, 0, 0.3)";
       ctx.fillRect(0, 0, 18, canvas.height);
 
       if (v) {
         var x = Math.round(scale(v, min, max, canvas.height));
+        ctx.fillStyle = "#ffb400";
         ctx.fillRect(0, x, 18, canvas.height);
       }
 
-      ctx.fillStyle = "#ff0000";
+      ctx.fillStyle = "#dc0067";
       ctx.fillRect(0, Math.round(scale(peakHold, min, max, canvas.height)) - 3, 18, 3);
     }
 
     function step(timestamp) {
       var delta = timestamp - last;
-      
+
       if (delta > 20) {
         draw();
         fadei++;
@@ -60,7 +61,7 @@ define(function () {
 
         last = timestamp;
       }
-      
+
       window.requestAnimationFrame(step);
     }
 
@@ -76,13 +77,13 @@ define(function () {
 
       i = (i + 1) % graphWidth;
     }
-    
+
     function drawPixel (x, y) {
       var radius = 1.5;
       ctx.save();
-      ctx.fillStyle = "#13B6F4";
-      ctx.shadowBlur = 15; 
-      ctx.shadowColor = "#13B6F4";    
+      ctx.fillStyle = "#ffb400";
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = "#ffb400";
       ctx.shadowOffsetX = 3;
       ctx.shadowOffsetY = 3;
       ctx.globalCompositeOperation = 'lighter';
@@ -93,11 +94,11 @@ define(function () {
       ctx.fill();
       ctx.restore();
     }
-    
+
     function fade() {
       var lastImage = ctx.getImageData(19, 0, graphWidth + 1, canvas.height);
       var pixelData = lastImage.data;
-      
+
       for (var i = 0; i < pixelData.length; i += 4) {
         pixelData[i+3] -= 2;
       }
@@ -106,7 +107,7 @@ define(function () {
     }
 
     function scale(n, min, max, height) {
-      return (1 - (n-min)/(max-min)) * height; 
+      return (1 - (n-min)/(max-min)) * height;
     }
 
     function resize() {

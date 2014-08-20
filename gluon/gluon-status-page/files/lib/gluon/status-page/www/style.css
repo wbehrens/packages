@@ -1,37 +1,89 @@
 body {
-  background: #171d25;
-  font-family: Droid Sans, Arial, sans;
+  background: #eee;
+  font-family: Roboto, Lucida Grande, sans, Arial;
   margin: 0;
   padding: 0;
-  color: #fff;
+  color: #333;
 }
 
 .main {
-  max-width: 30em;
-  background: #000;
-  min-height: 100vh;
-  box-sizing: border-box;
+  margin: 2em auto;
+  max-width: 960px;
+  background: #fff;
+  box-shadow: 0pt 5pt 20pt rgba(0, 0, 0, 0.19), 0pt 3pt 6pt rgba(0, 0, 0, 0.23);
+}
+
+.nodeinfo {
+  padding: 24pt 16pt;
+  border-bottom: 1pt solid rgba(0, 0, 0, 0.15);
+  background: #dc0067;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+h1 {
+  font-size: 18pt;
+  font-weight: bold;
 }
 
 canvas.signal-history {
-  border: 2px solid #113858;
-  margin-top: 0.5em;
+  background: rgba(0, 0, 0, 0.85);
+  vertical-align: bottom;
 }
 
-ul.list-neighbour {
+.list-neighbour {
   list-style: none;
   padding-left: 0;
+  padding: 0pt;
+  background: #fff;
+  margin-right: -1pt;
+  margin-bottom: -1pt;
 }
 
-ul.list-neighbour h3 {
-  font-size: 10pt;
+.list-neighbour h3 {
+  font-size: 14pt;
+  line-height: 20pt;
   margin: 0;
 }
 
-ul.list-neighbour li {
-  padding: 1em 1em;
-  border-width: 1px 0;
-  border-color: #113858;
+.list-neighbour li {
+  width: 50%;
+  box-sizing: border-box;
+  padding: 8pt;
+  display: inline-block;
+  border-width: 0 1pt 1pt 0;
   border-style: solid;
-  border-collapse: collapse;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.list-neighbour li .wrapper {
+  background: #fff;
+  color: #666;
+}
+
+.list-neighbour .info {
+  padding: 1em;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.list-neighbour .info p {
+  font-size: 10pt;
+}
+
+a {
+  color: #555;
+}
+
+@media only screen and (max-width: 1000px) {
+  .main {
+    margin: 0;
+    border: none;
+    max-width: none;
+    overflow: hidden;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  .list-neighbour li {
+    width: 100%;
+  }
 }
