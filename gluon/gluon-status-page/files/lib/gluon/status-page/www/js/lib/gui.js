@@ -15,14 +15,21 @@ define([ 'lib/signalgraph'
 
     var nodeInfoBlock = new NodeInfo();
 
+    var neighboursDiv = document.createElement("div");
+    neighboursDiv.setAttribute("class", "list-neighbour");
+
+    var h2 = document.createElement("h2");
+    h2.textContent = "Nachbarknoten";
+    neighboursDiv.appendChild(h2);
+
     var neighbours = document.createElement("ul");
-    neighbours.setAttribute("class", "list-neighbour");
+    neighboursDiv.appendChild(neighbours);
 
     var neighboursList = {};
 
     main.appendChild(header);
     content.appendChild(nodeInfoBlock);
-    content.appendChild(neighbours);
+    content.appendChild(neighboursDiv);
     main.appendChild(content);
     document.body.appendChild(main);
 

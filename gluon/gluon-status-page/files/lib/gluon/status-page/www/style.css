@@ -14,20 +14,33 @@ body {
 }
 
 header {
-  padding: 24pt 16pt;
+  padding: 0 16pt;
   border-bottom: 1pt solid rgba(0, 0, 0, 0.15);
   background: #dc0067;
   color: rgba(255, 255, 255, 0.95);
 }
 
+header h1 {
+  padding: 18pt 0;
+}
+
 h1 {
-  font-size: 18pt;
+  font-size: 20pt;
+  padding: none;
   font-weight: bold;
 }
 
 canvas.signal-history {
   background: rgba(0, 0, 0, 0.85);
   vertical-align: bottom;
+}
+
+h2 {
+  background: #fff;
+  padding: 12pt 8pt;
+  font-size: 11pt;
+  color: rgba(0, 0, 0, 0.54);
+  display: block;
 }
 
 section {
@@ -69,20 +82,21 @@ dd {
 }
 
 .list-neighbour h3 {
-  font-size: 14pt;
-  line-height: 20pt;
+  font-size: 11pt;
   margin: 0;
 }
 
 .list-neighbour li {
   width: 100%;
   box-sizing: border-box;
-  padding: 8pt;
-  display: inline-block;
+  padding: 0 8pt 8pt;
+  display: block;
   background: #fff;
   color: #666;
+}
+
+.list-neighbour ul, .list-neighbour h2 {
   box-shadow: 0pt 1.5pt 6pt -3pt rgba(0, 0, 0, 0.16), 0pt 1.5pt 6pt -3pt rgba(0, 0, 0, 0.23);
-  border-bottom: 1pt solid rgba(0, 0, 0, 0.12);
 }
 
 .list-neighbour .info {
