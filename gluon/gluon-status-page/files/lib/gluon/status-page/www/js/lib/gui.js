@@ -49,7 +49,7 @@ define([ 'lib/signalgraph'
     }
 
     function nodeArrived(ip) {
-      var stream = new NeighbourStream(ip);
+      var stream = new NeighbourStream(mgmtBus, ip);
       stopNeighbourStream = stream.onValue(updateNeighbours);
     }
 
