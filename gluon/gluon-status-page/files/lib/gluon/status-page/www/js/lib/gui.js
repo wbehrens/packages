@@ -1,8 +1,9 @@
 define([ 'lib/signalgraph'
        , 'lib/gui/nodeinfo'
-       ], function (SignalGraph, NodeInfo) {
+       , 'lib/neighbourstream'
+       ], function (SignalGraph, NodeInfo, NeighbourStream) {
 
-  return function (document, mgmtBus, neighbourBus) {
+  return function (document, mgmtBus) {
     var header = document.createElement("header");
     var h1 = document.createElement("h1");
     h1.textContent = "Statuspage";
@@ -33,13 +34,23 @@ define([ 'lib/signalgraph'
     main.appendChild(content);
     document.body.appendChild(main);
 
+    var stopNeighbourStream;
+
     function nodeChanged(nodeInfo) {
       neighboursList = {};
 
       while (neighbours.firstChild)
         neighbours.removeChild(neighbours.firstChild);
 
+      if (stopNeighbourStream)
+        stopNeighbourStream();
+
       nodeInfoBlock.update(nodeInfo);
+    }
+
+    function nodeArrived(ip) {
+      var stream = new NeighbourStream(ip);
+      stopNeighbourStream = stream.onValue(updateNeighbours);
     }
 
     function updateNeighbours(d) {
@@ -132,11 +143,9 @@ define([ 'lib/signalgraph'
       }
     }
 
-    var events = { "goto": nodeChanged
-                 }
-
-    mgmtBus.onEvent(events);
-    neighbourBus.onValue(updateNeighbours);
+    mgmtBus.onEvent({ "goto": nodeChanged
+                    , "arrived": nodeArrived
+                    });
 
     return this;
   }

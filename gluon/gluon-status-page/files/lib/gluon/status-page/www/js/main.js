@@ -2,8 +2,7 @@ require([ "vendor/bacon"
         , "lib/helper"
         , "lib/streams"
         , "lib/gui"
-        , "lib/neighbourstream"
-        ], function(Bacon, Helper, Streams, GUI, NeighbourStream) {
+        ], function(Bacon, Helper, Streams, GUI) {
   var bootstrapUrl = "http://[fdef:ffc0:3dd7:0:76ea:3aff:febe:223e]/cgi-bin/nodeinfo";
 
   function ManagementBus() {
@@ -35,9 +34,8 @@ require([ "vendor/bacon"
   ManagementBus.prototype.constructor = ManagementBus;
 
   var mgmtBus = new ManagementBus();
-  var neighbourBus = new Bacon.Bus();
 
-  var gui = new GUI(document, mgmtBus, neighbourBus);
+  var gui = new GUI(document, mgmtBus);
 
   var stopStream;
 
@@ -45,23 +43,14 @@ require([ "vendor/bacon"
     return Helper.request(ip, "nodeinfo").then(function(d) { return ip });
   }
 
-  var events = { "goto": gotoNode
-               , "arrived": startStream
-               };
-
-  mgmtBus.onEvent(events);
+  mgmtBus.onEvent({ "goto": gotoNode });
 
   function gotoNode(nodeInfo) {
     if (stopStream)
       stopStream();
 
     var addresses = nodeInfo.network.addresses.filter(function (d) { return !/^fe80:/.test(d) });
-    Promise.race(addresses.map(tryIp)).then(mgmtBus.pushEvent("arrived"));
-  }
-
-  function startStream(ip) {
-    var stream = new NeighbourStream(ip);
-    stopStream = neighbourBus.plug(stream);
+    Promise.race(addresses.map(tryIp)).then(mgmtBus.pushEvent("arrived"), mgmtBus.pushEvent("gotoFailed"));
   }
 
   mgmtBus.log("mgmt");
