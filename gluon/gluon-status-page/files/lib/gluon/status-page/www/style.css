@@ -108,6 +108,10 @@ dd {
   font-size: 10pt;
 }
 
+.list-nodes {
+  padding: 2em;
+}
+
 a {
   color: #555;
 }

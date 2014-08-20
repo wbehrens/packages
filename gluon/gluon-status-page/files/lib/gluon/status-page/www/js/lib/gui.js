@@ -30,10 +30,14 @@ define([ 'lib/signalgraph'
 
     var neighboursList = {};
 
+    var nodesList = document.createElement("ul");
+    nodesList.setAttribute("class", "list-nodes");
+
     main.appendChild(header);
     content.appendChild(nodeInfoBlock);
     content.appendChild(neighboursDiv);
     main.appendChild(content);
+    main.appendChild(nodesList);
     document.body.appendChild(main);
 
     var stopNeighbourStream;
@@ -56,6 +60,20 @@ define([ 'lib/signalgraph'
     }
 
     function newNode(nodeInfo) {
+      if (!(nodeInfo.node_id in nodes)) {
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.textContent = nodeInfo.hostname;
+        a.href = "#";
+        a.onclick = function () {
+          mgmtBus.pushEvent("goto", nodeInfo);
+          return false;
+        }
+
+        li.appendChild(a);
+        nodesList.appendChild(li);
+      }
+
       nodes[nodeInfo.node_id] = nodeInfo;
     }
 
