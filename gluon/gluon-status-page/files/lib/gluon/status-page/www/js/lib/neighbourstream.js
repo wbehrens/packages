@@ -11,7 +11,7 @@ define([ "vendor/bacon"
         var querier = nodeQuerier(bus);
         querier.map(".nodeInfo").onValue(mgmtBus.pushEvent("nodeinfo"));
 
-        macsToNodeId = querier.scan({}, foldMacs);
+        var macsToNodeId = querier.scan({}, foldMacs);
 
         var stations = [];
         for (var ifname in interfaces) {
