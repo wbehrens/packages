@@ -1,3 +1,4 @@
+"use strict";
 define(function () {
   return function () {
     var el = document.createElement("div");

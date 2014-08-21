@@ -1,3 +1,4 @@
+"use strict";
 define(function () {
   return function (canvas, min, max, holdtime, autowidth) {
     var i = 0;

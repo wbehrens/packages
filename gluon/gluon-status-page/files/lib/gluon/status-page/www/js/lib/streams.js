@@ -1,3 +1,4 @@
+"use strict";
 define(["vendor/bacon", "lib/helper"], function(Bacon, Helper) {
   function nodeInfo(ip, ifname) {
     return Bacon.fromBinder(function (sink) {

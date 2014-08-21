@@ -1,3 +1,4 @@
+"use strict";
 require([ "vendor/bacon"
         , "lib/helper"
         , "lib/streams"

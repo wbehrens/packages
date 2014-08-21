@@ -1,3 +1,4 @@
+"use strict";
 define([ "vendor/bacon"
        , "lib/helper"
        , "lib/streams"

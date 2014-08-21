@@ -1,3 +1,4 @@
+"use strict";
 define(function () {
   function get(url) {
     return new Promise(function(resolve, reject) {

@@ -1,3 +1,4 @@
+"use strict";
 define([ 'lib/gui/signalgraph'
        , 'lib/gui/nodeinfo'
        , 'lib/neighbourstream'
