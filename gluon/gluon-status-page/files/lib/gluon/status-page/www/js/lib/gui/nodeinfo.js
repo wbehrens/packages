@@ -22,7 +22,10 @@ define(function () {
     function deepGet(dict, key) {
       var k = key.shift();
 
-      if (key.length == 0) 
+      if (!(k in dict))
+        return null;
+
+      if (key.length == 0)
         return dict[k];
 
       return deepGet(dict[k], key);
@@ -31,7 +34,7 @@ define(function () {
     function dlEntry(dl, dict, key, prettyName) {
       var v = deepGet(dict, key.split("."));
 
-      if (v === undefined)
+      if (v === null)
         return;
 
       var dt = document.createElement("dt");
@@ -64,6 +67,7 @@ define(function () {
 
       var dict = flattenDict(nodeInfo);
 
+      dlEntry(list, nodeInfo, "owner.contact", "Kontakt");
       dlEntry(list, nodeInfo, "hardware.model", "Modell");
       dlEntry(list, nodeInfo, "network.mac", "Primäre MAC");
       dlEntry(list, nodeInfo, "network.addresses", "IP-Adresse");
