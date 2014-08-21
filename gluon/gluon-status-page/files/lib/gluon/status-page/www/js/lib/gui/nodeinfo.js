@@ -5,21 +5,6 @@ define(function () {
     el.className = "nodeinfo";
     el.update = update;
 
-    function flattenDict(o, n, parentKey) {
-      if (n === undefined)
-        n = {};
-
-      for (var k in o) {
-        var nk = (parentKey?parentKey + ".":"") + k;
-        if (typeof o[k] === 'object')
-          flattenDict(o[k], n, nk);
-        else
-          n[nk] = o[k]
-      }
-
-      return n;
-    }
-
     function deepGet(dict, key) {
       var k = key.shift();
 
@@ -65,8 +50,6 @@ define(function () {
       el.appendChild(nodename);
 
       var list = document.createElement("dl");
-
-      var dict = flattenDict(nodeInfo);
 
       dlEntry(list, nodeInfo, "owner.contact", "Kontakt");
       dlEntry(list, nodeInfo, "hardware.model", "Modell");
