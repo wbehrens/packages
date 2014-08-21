@@ -100,22 +100,6 @@ define([ "vendor/bacon"
         return wifi;
       }
 
-      function batadvToDict(batadv) {
-        var o = {};
-
-        for (var station in batadv) {
-          var a = batadv[station];
-
-          if (!(a.ifname in o))
-            o[a.ifname] = {};
-
-          o[a.ifname][station] = {};
-          o[a.ifname][station].batadvTQ = a.tq;
-        }
-
-        return o;
-      }
-
       Helper.request(ip, "interfaces").then(magic);
 
       return function () {
