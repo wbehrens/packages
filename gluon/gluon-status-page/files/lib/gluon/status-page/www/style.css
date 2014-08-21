@@ -50,7 +50,7 @@ section {
 }
 
 .nodeinfo {
-  flex: 1;
+  flex-shrink: 0;
   padding: 16pt;
   box-sizing: border-box;
   border-right: 1pt solid rgba(0, 0, 0, 0.12);
