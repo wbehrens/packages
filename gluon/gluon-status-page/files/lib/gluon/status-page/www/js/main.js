@@ -52,13 +52,28 @@ require([ "vendor/bacon"
     return Helper.request(ip, "nodeinfo").then(function(d) { return ip; });
   }
 
+  var gotoEpoch = 0;
+
+  function onEpoch(epoch, f) {
+    return function (d) {
+      if (epoch == gotoEpoch)
+        return f(d);
+    }
+  }
+
   function gotoNode(nodeInfo) {
+    gotoEpoch++;
+
     var addresses = nodeInfo.network.addresses.filter(function (d) { return !/^fe80:/.test(d) });
-    Promise.race(addresses.map(tryIp)).then(function (d) {
-        mgmtBus.pushEvent("arrived")([nodeInfo, d]);
-      }).catch(function () {
-        mgmtBus.pushEvent("gotoFailed")(nodeInfo);
-      });
+    Promise.race(addresses.map(tryIp)).then(
+        onEpoch(gotoEpoch, function (d) {
+          mgmtBus.pushEvent("arrived")([nodeInfo, d]);
+        })
+      ).catch(
+        onEpoch(gotoEpoch, function () {
+          mgmtBus.pushEvent("gotoFailed")(nodeInfo);
+        })
+      );
   }
 
   function scanNodeInfo(a, nodeInfo) {
