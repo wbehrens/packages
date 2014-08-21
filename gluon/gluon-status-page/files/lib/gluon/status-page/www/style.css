@@ -51,27 +51,29 @@ section {
 
 .nodeinfo {
   flex-shrink: 0;
-  padding: 16pt;
+  padding: 12pt 16pt;
   box-sizing: border-box;
   border-right: 1pt solid rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.01);
 }
 
 dl {
-  margin: 4pt 0;
+  margin: 0;
+  padding: 0;
 }
 
 dt {
   font-size: 11pt;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.87);
-  line-height: 16pt;
+  margin-bottom: 3pt;
 }
 
 dd {
   font-size: 11pt;
   font-weight: normal;
   color: rgba(0, 0, 0, 0.54);
-  padding-bottom: 0.7em;
+  padding-bottom: 8pt;
 }
 
 .list-neighbour {

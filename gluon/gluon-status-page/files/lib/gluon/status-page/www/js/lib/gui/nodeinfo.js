@@ -33,10 +33,6 @@ define(["lib/helper"], function (Helper) {
     function update(nodeInfo) {
       clear();
 
-      var nodename = document.createElement("h1");
-      nodename.textContent = nodeInfo.hostname;
-      el.appendChild(nodename);
-
       var list = document.createElement("dl");
 
       dlEntry(list, nodeInfo, "owner.contact", "Kontakt");
