@@ -36,17 +36,41 @@ require([ "vendor/bacon"
 
   var mgmtBus = new ManagementBus();
 
-  var gui = new GUI(mgmtBus);
+  var nodesBusIn = new Bacon.Bus();
+
+  var nodesBus = nodesBusIn.scan({ "nodes": {}
+                                 , "macs": {}
+                                 }, scanNodeInfo);
+
+  nodesBus.log("nodes");
+
+  var gui = new GUI(mgmtBus, nodesBus);
+
+  mgmtBus.onEvent({ "goto": gotoNode
+                  , "nodeinfo": nodesBusIn.push
+                  });
 
   function tryIp(ip) {
     return Helper.request(ip, "nodeinfo").then(function(d) { return ip });
   }
 
-  mgmtBus.onEvent({ "goto": gotoNode });
-
   function gotoNode(nodeInfo) {
     var addresses = nodeInfo.network.addresses.filter(function (d) { return !/^fe80:/.test(d) });
     Promise.race(addresses.map(tryIp)).then(mgmtBus.pushEvent("arrived"), mgmtBus.pushEvent("gotoFailed"));
+  }
+
+  function scanNodeInfo(a, nodeInfo) {
+    var nodeId = nodeInfo.node_id;
+    a.nodes[nodeId] = nodeInfo;
+
+    var macs = Helper.dictGet(nodeInfo, ["network", "mesh_interfaces"]);
+
+    if (macs)
+      macs.forEach(function (mac) {
+        a.macs[mac] = nodeId;
+      });
+
+    return a;
   }
 
   mgmtBus.log("mgmt");

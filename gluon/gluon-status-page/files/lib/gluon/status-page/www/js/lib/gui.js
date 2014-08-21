@@ -4,7 +4,7 @@ define([ 'lib/gui/signalgraph'
        , 'lib/neighbourstream'
        ], function (SignalGraph, NodeInfo, NeighbourStream) {
 
-  return function (mgmtBus) {
+  return function (mgmtBus, nodesBus) {
     var nodes = {};
 
     var header = document.createElement("header");
@@ -60,22 +60,26 @@ define([ 'lib/gui/signalgraph'
       stopNeighbourStream = stream.onValue(updateNeighbours);
     }
 
-    function newNode(nodeInfo) {
-      if (!(nodeInfo.node_id in nodes)) {
-        var li = document.createElement("li");
-        var a = document.createElement("a");
-        a.textContent = nodeInfo.hostname;
-        a.href = "#";
-        a.onclick = function () {
-          mgmtBus.pushEvent("goto", nodeInfo);
-          return false;
-        }
+    function newNodes(d) {
+      for (var nodeId in d) {
+        if (!(nodeId in nodes)) {
+          var nodeInfo = nodes[nodeId];
 
-        li.appendChild(a);
-        nodesList.appendChild(li);
+          var li = document.createElement("li");
+          var a = document.createElement("a");
+          a.textContent = nodeInfo.hostname;
+          a.href = "#";
+          a.onclick = function () {
+            mgmtBus.pushEvent("goto", nodeInfo);
+            return false;
+          }
+
+          li.appendChild(a);
+          nodesList.appendChild(li);
+        }
       }
 
-      nodes[nodeInfo.node_id] = nodeInfo;
+      nodes = d;
     }
 
     function updateNeighbours(d) {
@@ -170,8 +174,9 @@ define([ 'lib/gui/signalgraph'
 
     mgmtBus.onEvent({ "goto": nodeChanged
                     , "arrived": nodeArrived
-                    , "nodeinfo": newNode
                     });
+
+    nodesBus.map(".nodes").onValue(newNodes);
 
     return this;
   }
