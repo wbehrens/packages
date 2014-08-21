@@ -72,6 +72,18 @@ require([ "vendor/bacon"
 
   mgmtBus.log("mgmt");
 
+  if (localStorage.nodes)
+    JSON.parse(localStorage.nodes).forEach(nodesBusIn.push);
+
+  nodesBus.map(".nodes").onValue(function (nodes) {
+    var out = [];
+
+    for (var k in nodes)
+      out.push(nodes[k]);
+
+    localStorage.nodes = JSON.stringify(out);
+  });
+
   Helper.getJSON(bootstrapUrl).then(function (d) {
     mgmtBus.pushEvent("nodeinfo", d);
     mgmtBus.pushEvent("goto", d);
