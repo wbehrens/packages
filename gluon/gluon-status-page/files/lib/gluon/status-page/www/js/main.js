@@ -53,5 +53,7 @@ require([ "vendor/bacon"
   Helper.getJSON(bootstrapUrl).then(function (d) {
     mgmtBus.pushEvent("nodeinfo", d);
     mgmtBus.pushEvent("goto", d);
+  }, function (d) {
+    console.log("FIXME bootstrapping failed");
   });
 })

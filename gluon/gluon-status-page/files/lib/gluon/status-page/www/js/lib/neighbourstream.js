@@ -34,9 +34,9 @@ define([ "vendor/bacon"
           }, {});
         });
 
-        var batadvStream = new Streams.batadv(ip);
+        var batadvStream = new Streams.batadv(ip).toProperty({});
 
-        var stream3 = wifiStream.combine(batadvStream.toProperty({}), combineWifiBatadv)
+        var stream3 = wifiStream.combine(batadvStream, combineWifiBatadv);
 
         stream3 = Bacon.combineTemplate({ stations: stream3
                                         , macs: macsToNodeId
