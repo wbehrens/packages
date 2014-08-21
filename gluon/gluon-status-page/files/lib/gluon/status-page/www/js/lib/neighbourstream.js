@@ -39,9 +39,6 @@ define([ "vendor/bacon"
 
     return Bacon.fromBinder(function (sink) {
       function magic(interfaces) {
-        for (var ifname in interfaces)
-          querierAsk.push(ifname);
-
         var stations = [];
         for (var ifname in interfaces) {
           var stream = new Streams.stations(ip, ifname).toProperty({});
@@ -64,28 +61,43 @@ define([ "vendor/bacon"
         
         var batadvStream = new Streams.batadv(ip).toProperty({});
 
-        var stream3 = wifiStream.combine(batadvStream, combineWifiBatadv);
+        var stream = Bacon.combineWith(combine, wifiStream
+                                              , batadvStream
+                                              , nodesBus.map(".macs")
+                                              );
 
-        stream3.combine(nodesBus.map(".macs"),
-          combineNeighoursNodeInfo(querierAsk)
-        ).subscribe(sink);
+        stream.onValue(function (d) {
+          for (var station in d)
+            if (!("nodeInfo" in d[station]))
+              querierAsk.push(d[station].ifname);
+        });
+
+        stream.subscribe(sink);
+
+        for (var ifname in interfaces)
+          querierAsk.push(ifname);
       }
 
-      function combineNeighoursNodeInfo(bus) {
-        return function(stations, macs) {
-          var toAsk = new Bacon.Bus();
-          bus.plug(toAsk.skipDuplicates());
+      function combine(wifi, batadv, macs) {
+        var stations = combineWifiBatadv(wifi, batadv);
 
-          for (var station in stations)
-            if (station in macs)
-              stations[station].nodeInfo = macs[station];
-            else
-              toAsk.push(stations[station].ifname);
+        for (var station in stations)
+          if (station in macs)
+            stations[station].nodeInfo = macs[station];
 
-          toAsk.end();
+        return stations;
+      }
 
-          return stations;
-        }
+      function combineWifiBatadv(wifi, batadv) {
+        for (var station in batadv) {
+          if (!(station in wifi))
+            wifi[station] = {}
+
+          for (var a in batadv[station])
+            wifi[station][a] = batadv[station][a];
+          }
+
+        return wifi;
       }
 
       function batadvToDict(batadv) {
@@ -102,18 +114,6 @@ define([ "vendor/bacon"
         }
 
         return o;
-      }
-
-      function combineWifiBatadv(wifi, batadv) {
-        for (var station in batadv) {
-          if (!(station in wifi))
-            wifi[station] = {}
-
-          for (var a in batadv[station])
-            wifi[station][a] = batadv[station][a];
-          }
-
-        return wifi;
       }
 
       Helper.request(ip, "interfaces").then(magic);
