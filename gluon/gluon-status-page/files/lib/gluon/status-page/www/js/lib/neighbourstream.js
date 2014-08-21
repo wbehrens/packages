@@ -6,19 +6,27 @@ define([ "vendor/bacon"
 
   return function (mgmtBus, nodesBus, ip) {
     function nodeQuerier(bus) {
+      var asked = {};
       var out = new Bacon.Bus();
+      var timeout = 6000;
 
       bus.subscribe(function (e) {
         if (e.isEnd())
           out.end();
 
         if (e.hasValue()) {
-          var stream = Streams.nodeInfo(ip, e.value());
-          out.plug(stream.map(function (d) {
-            return { "ifname": e.value()
-                   , "nodeInfo": d
-                   };
-          }));
+          var now = new Date().getTime();
+          var ifname = e.value();
+
+          if (!(ifname in asked) || now - asked[ifname] > timeout) {
+            asked[ifname] = now;
+            var stream = Streams.nodeInfo(ip, ifname);
+            out.plug(stream.map(function (d) {
+              return { "ifname": e.value()
+                     , "nodeInfo": d
+                     };
+            }));
+          }
         }
       });
 
@@ -53,44 +61,30 @@ define([ "vendor/bacon"
             return p;
           }, {});
         });
-
+        
         var batadvStream = new Streams.batadv(ip).toProperty({});
 
         var stream3 = wifiStream.combine(batadvStream, combineWifiBatadv);
 
-        stream3 = Bacon.combineTemplate({ stations: stream3
-                                        , macs: nodesBus.map(".macs")
-                                        })
-                        .scan({ asked: {}, neighbours: {}}, foldNeighbours(querierAsk))
-                        .map(".neighbours");
-
-        stream3.onValue(sink);
+        stream3.combine(nodesBus.map(".macs"),
+          combineNeighoursNodeInfo(querierAsk)
+        ).subscribe(sink);
       }
 
-      function foldNeighbours(bus) {
-        return function(a, b) {
-          var now = new Date().getTime();
-
+      function combineNeighoursNodeInfo(bus) {
+        return function(stations, macs) {
           var toAsk = new Bacon.Bus();
           bus.plug(toAsk.skipDuplicates());
 
-          for (var mac in a.asked)
-            if (now - a.asked[mac] > 5 * 1000)
-              delete a.asked[mac];
-
-          for (var station in b.stations)
-            if (station in b.macs) {
-              b.stations[station].nodeInfo = b.macs[station];
-            } else if (!(station in a.asked)) {
-              a.asked[station] = now;
-              toAsk.push(b.stations[station].ifname);
-            }
+          for (var station in stations)
+            if (station in macs)
+              stations[station].nodeInfo = macs[station];
+            else
+              toAsk.push(stations[station].ifname);
 
           toAsk.end();
 
-          a.neighbours = b.stations;
-
-          return a;
+          return stations;
         }
       }
 
