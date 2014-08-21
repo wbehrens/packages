@@ -1,4 +1,4 @@
-define([ 'lib/signalgraph'
+define([ 'lib/gui/signalgraph'
        , 'lib/gui/nodeinfo'
        , 'lib/neighbourstream'
        ], function (SignalGraph, NodeInfo, NeighbourStream) {
