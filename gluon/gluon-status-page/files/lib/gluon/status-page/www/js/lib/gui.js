@@ -105,8 +105,7 @@ define([ 'lib/gui/signalgraph'
     function updateNeighbours(d) {
       var stations = {};
       for (var station in d) {
-        if ('signal' in d[station])
-          stations[station] = null;
+        stations[station] = null;
 
         if (!(station in neighboursList)) {
           var el = document.createElement("li");

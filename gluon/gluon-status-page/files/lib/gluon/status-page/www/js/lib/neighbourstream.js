@@ -58,7 +58,7 @@ define([ "vendor/bacon"
             return p;
           }, {});
         });
-        
+
         var batadvStream = new Streams.batadv(ip).toProperty({});
 
         var stream = Bacon.combineWith(combine, wifiStream
