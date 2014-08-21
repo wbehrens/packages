@@ -27,7 +27,7 @@ define([ 'lib/gui/signalgraph'
     var nodeInfoBlock = new NodeInfo();
 
     var neighboursDiv = document.createElement("div");
-    neighboursDiv.className ="list-neighbour";
+    neighboursDiv.className = "list-neighbour";
 
     var h2 = document.createElement("h2");
     h2.textContent = "Nachbarknoten";
