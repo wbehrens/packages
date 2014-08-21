@@ -1,24 +1,12 @@
 "use strict";
-define(function () {
+define(["lib/helper"], function (Helper) {
   return function () {
     var el = document.createElement("div");
     el.className = "nodeinfo";
     el.update = update;
 
-    function deepGet(dict, key) {
-      var k = key.shift();
-
-      if (!(k in dict))
-        return null;
-
-      if (key.length == 0)
-        return dict[k];
-
-      return deepGet(dict[k], key);
-    }
-
     function dlEntry(dl, dict, key, prettyName) {
-      var v = deepGet(dict, key.split("."));
+      var v = Helper.dictGet(dict, key.split("."));
 
       if (v === null)
         return;

@@ -37,8 +37,21 @@ define(function () {
     return getJSON(buildUrl(ip, object, param));
   }
 
+  function dictGet(dict, key) {
+    var k = key.shift();
+
+    if (!(k in dict))
+      return null;
+
+    if (key.length == 0)
+      return dict[k];
+
+    return dictGet(dict[k], key);
+  }
+
   return { buildUrl: buildUrl
          , request: request
          , getJSON: getJSON
+         , dictGet: dictGet
          }
 })
