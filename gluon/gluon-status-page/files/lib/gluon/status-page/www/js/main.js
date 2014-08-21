@@ -35,7 +35,7 @@ require([ "vendor/bacon"
 
   var mgmtBus = new ManagementBus();
 
-  var gui = new GUI(document, mgmtBus);
+  var gui = new GUI(mgmtBus);
 
   function tryIp(ip) {
     return Helper.request(ip, "nodeinfo").then(function(d) { return ip });

@@ -3,7 +3,7 @@ define([ 'lib/signalgraph'
        , 'lib/neighbourstream'
        ], function (SignalGraph, NodeInfo, NeighbourStream) {
 
-  return function (document, mgmtBus) {
+  return function (mgmtBus) {
     var nodes = {};
 
     var header = document.createElement("header");
