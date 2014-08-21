@@ -5,9 +5,18 @@ define([ 'lib/gui/signalgraph'
        ], function (SignalGraph, NodeInfo, NeighbourStream) {
 
   return function (mgmtBus, nodesBus) {
+    function setTitle(node, prefix) {
+      var title = node?node.hostname:"(not connected)";
+
+      if (prefix)
+        title = prefix + " " + title
+
+      document.title = title;
+      h1.textContent = title;
+    }
+
     var header = document.createElement("header");
     var h1 = document.createElement("h1");
-    h1.textContent = "Statuspage";
     header.appendChild(h1);
 
     var content = document.createElement("section");
@@ -36,6 +45,9 @@ define([ 'lib/gui/signalgraph'
     content.appendChild(nodeInfoBlock);
     content.appendChild(neighboursDiv);
     main.appendChild(content);
+
+    setTitle();
+
     document.body.appendChild(main);
     document.body.appendChild(nodesList);
 
@@ -51,10 +63,17 @@ define([ 'lib/gui/signalgraph'
         stopNeighbourStream();
 
       nodeInfoBlock.update(nodeInfo);
+      setTitle(nodeInfo, "connecting");
     }
 
-    function nodeArrived(ip) {
+    function nodeNotArrived(nodeInfo) {
+      setTitle(nodeInfo, "failed to connect");
+    }
+
+    function nodeArrived(nodeInfo, ip) {
       var stream = new NeighbourStream(mgmtBus, nodesBus, ip);
+
+      setTitle(nodeInfo);
 
       if (stopNeighbourStream)
         stopNeighbourStream();
@@ -175,6 +194,7 @@ define([ 'lib/gui/signalgraph'
 
     mgmtBus.onEvent({ "goto": nodeChanged
                     , "arrived": nodeArrived
+                    , "gotoFailed": nodeNotArrived
                     });
 
     nodesBus.map(".nodes").onValue(newNodes);

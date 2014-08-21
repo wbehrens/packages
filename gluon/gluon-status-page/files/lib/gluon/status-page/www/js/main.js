@@ -12,7 +12,7 @@ require([ "vendor/bacon"
 
     this.pushEvent = function (key, a) {
       var f = function (a) {
-        return self.push([key, a]);
+        return self.push([key].concat(a));
       }
 
       if (a !== undefined)
@@ -49,12 +49,16 @@ require([ "vendor/bacon"
                   });
 
   function tryIp(ip) {
-    return Helper.request(ip, "nodeinfo").then(function(d) { return ip });
+    return Helper.request(ip, "nodeinfo").then(function(d) { return ip; });
   }
 
   function gotoNode(nodeInfo) {
     var addresses = nodeInfo.network.addresses.filter(function (d) { return !/^fe80:/.test(d) });
-    Promise.race(addresses.map(tryIp)).then(mgmtBus.pushEvent("arrived"), mgmtBus.pushEvent("gotoFailed"));
+    Promise.race(addresses.map(tryIp)).then(function (d) {
+        mgmtBus.pushEvent("arrived")([nodeInfo, d]);
+      }).catch(function () {
+        mgmtBus.pushEvent("gotoFailed")(nodeInfo);
+      });
   }
 
   function scanNodeInfo(a, nodeInfo) {
