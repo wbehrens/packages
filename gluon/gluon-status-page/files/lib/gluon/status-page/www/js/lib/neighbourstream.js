@@ -22,7 +22,7 @@ define([ "vendor/bacon"
             asked[ifname] = now;
             var stream = Streams.nodeInfo(ip, ifname);
             out.plug(stream.map(function (d) {
-              return { "ifname": e.value()
+              return { "ifname": ifname
                      , "nodeInfo": d
                      };
             }));
