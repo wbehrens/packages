@@ -42,8 +42,6 @@ require([ "vendor/bacon"
                                  , "macs": {}
                                  }, scanNodeInfo);
 
-  nodesBus.log("nodes");
-
   var gui = new GUI(mgmtBus, nodesBus);
 
   mgmtBus.onEvent({ "goto": gotoNode
@@ -60,14 +58,13 @@ require([ "vendor/bacon"
   }
 
   function scanNodeInfo(a, nodeInfo) {
-    var nodeId = nodeInfo.node_id;
-    a.nodes[nodeId] = nodeInfo;
+    a.nodes[nodeInfo.node_id] = nodeInfo;
 
     var macs = Helper.dictGet(nodeInfo, ["network", "mesh_interfaces"]);
 
     if (macs)
       macs.forEach(function (mac) {
-        a.macs[mac] = nodeId;
+        a.macs[mac] = nodeInfo;
       });
 
     return a;

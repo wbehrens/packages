@@ -5,8 +5,6 @@ define([ 'lib/gui/signalgraph'
        ], function (SignalGraph, NodeInfo, NeighbourStream) {
 
   return function (mgmtBus, nodesBus) {
-    var nodes = {};
-
     var header = document.createElement("header");
     var h1 = document.createElement("h1");
     h1.textContent = "Statuspage";
@@ -56,30 +54,29 @@ define([ 'lib/gui/signalgraph'
     }
 
     function nodeArrived(ip) {
-      var stream = new NeighbourStream(mgmtBus, ip);
+      var stream = new NeighbourStream(mgmtBus, nodesBus, ip);
       stopNeighbourStream = stream.onValue(updateNeighbours);
     }
 
     function newNodes(d) {
+      while (nodesList.firstChild)
+        nodesList.removeChild(nodesList.firstChild);
+
       for (var nodeId in d) {
-        if (!(nodeId in nodes)) {
-          var nodeInfo = nodes[nodeId];
-
-          var li = document.createElement("li");
-          var a = document.createElement("a");
-          a.textContent = nodeInfo.hostname;
-          a.href = "#";
-          a.onclick = function () {
-            mgmtBus.pushEvent("goto", nodeInfo);
-            return false;
-          }
-
-          li.appendChild(a);
-          nodesList.appendChild(li);
+        var nodeInfo = d[nodeId];
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.textContent = nodeInfo.hostname;
+        a.href = "#";
+        a.nodeInfo = nodeInfo;
+        a.onclick = function () {
+          mgmtBus.pushEvent("goto", this.nodeInfo);
+          return false;
         }
-      }
 
-      nodes = d;
+        li.appendChild(a);
+        nodesList.appendChild(li);
+      }
     }
 
     function updateNeighbours(d) {
@@ -134,17 +131,17 @@ define([ 'lib/gui/signalgraph'
             var hostname = neighboursList[station].hostname;
             var info = neighboursList[station].info;
 
-            if ("nodeId" in d[station] && d[station].nodeId in nodes) {
+            if ("nodeInfo" in d[station]) {
               neighboursList[station].infoSet = true;
 
-              var nodeId = d[station].nodeId;
+              var node = d[station].nodeInfo;
               var link = document.createElement("a");
-              var node = nodes[nodeId];
 
               link.textContent = node.hostname;
               link.href = "#";
+              link.nodeInfo = node;
               link.onclick = function () {
-                mgmtBus.pushEvent("goto", nodes[nodeId]);
+                mgmtBus.pushEvent("goto", this.nodeInfo);
                 return false;
               }
 

@@ -4,17 +4,18 @@ define([ "vendor/bacon"
        , "lib/streams"
        ], function(Bacon, Helper, Streams) {
 
-  return function (mgmtBus, ip) {
+  return function (mgmtBus, nodesBus, ip) {
     return Bacon.fromBinder(function (sink) {
       function magic(interfaces) {
-        var bus = new Bacon.Bus();
-        var querier = nodeQuerier(bus);
+        var querierAsk = new Bacon.Bus();
+        var querier = nodeQuerier(querierAsk);
         querier.map(".nodeInfo").onValue(mgmtBus.pushEvent("nodeinfo"));
 
-        var macsToNodeId = querier.scan({}, foldMacs);
+        var macsToNodeId = nodesBus.map(".macs");
 
         var stations = [];
         for (var ifname in interfaces) {
+          querierAsk.push(ifname);
           var stream = new Streams.stations(ip, ifname);
           stream = stream.map(function (d) {
             for (var station in d)
@@ -42,7 +43,7 @@ define([ "vendor/bacon"
         stream3 = Bacon.combineTemplate({ stations: stream3
                                         , macs: macsToNodeId
                                         })
-                        .scan({ asked: {}, neighbours: {}}, foldNeighbours(bus))
+                        .scan({ asked: {}, neighbours: {}}, foldNeighbours(querierAsk))
                         .map(".neighbours");
 
         stream3.onValue(sink);
@@ -63,14 +64,6 @@ define([ "vendor/bacon"
         return out;
       }
 
-      function foldMacs(a, node) {
-        node.nodeInfo.network.mesh_interfaces.forEach(function (mac) {
-          a[mac] = node.nodeInfo.node_id;
-        });
-
-        return a;
-      }
-
       function foldNeighbours(bus) {
         return function(a, b) {
           var now = new Date().getTime();
@@ -84,7 +77,7 @@ define([ "vendor/bacon"
 
           for (var station in b.stations)
             if (station in b.macs) {
-              b.stations[station].nodeId = b.macs[station];
+              b.stations[station].nodeInfo = b.macs[station];
             } else if (!(station in a.asked)) {
               a.asked[station] = now;
               toAsk.push(b.stations[station].ifname);
