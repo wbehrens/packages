@@ -22,7 +22,7 @@ define([ 'lib/gui/signalgraph'
     var content = document.createElement("section");
 
     var main = document.createElement("div");
-    main.className ="main";
+    main.className = "main";
 
     var nodeInfoBlock = new NodeInfo();
 
@@ -110,19 +110,19 @@ define([ 'lib/gui/signalgraph'
         if (!(station in neighboursList)) {
           var el = document.createElement("li");
           var wrapper = document.createElement("div");
-          wrapper.className ="wrapper";
+          wrapper.className = "wrapper";
 
           var canvas = document.createElement("canvas");
           el.appendChild(wrapper);
           wrapper.appendChild(canvas);
           neighbours.appendChild(el);
 
-          canvas.className ="signal-history";
+          canvas.className = "signal-history";
           canvas.height = 100;
           var chart = new SignalGraph(canvas, -100, 0, 5, true);
 
           var info = document.createElement("div");
-          info.className ="info";
+          info.className = "info";
 
           var hostname = document.createElement("h3");
           info.appendChild(hostname);
