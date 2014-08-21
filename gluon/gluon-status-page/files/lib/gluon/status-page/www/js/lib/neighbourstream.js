@@ -5,26 +5,39 @@ define([ "vendor/bacon"
        ], function(Bacon, Helper, Streams) {
 
   return function (mgmtBus, nodesBus, ip) {
+    function nodeQuerier(bus) {
+      var out = new Bacon.Bus();
+
+      bus.onValue(function (ifname) {
+        var stream = Streams.nodeInfo(ip, ifname);
+        out.plug(stream.map(function (d) {
+          return { "ifname": ifname
+                 , "nodeInfo": d
+                 };
+        }));
+      });
+
+      return out;
+    }
+
+    var querierAsk = new Bacon.Bus();
+    var querier = nodeQuerier(querierAsk);
+    querier.map(".nodeInfo").onValue(mgmtBus.pushEvent("nodeinfo"));
+
     return Bacon.fromBinder(function (sink) {
       function magic(interfaces) {
-        var querierAsk = new Bacon.Bus();
-        var querier = nodeQuerier(querierAsk);
-        querier.map(".nodeInfo").onValue(mgmtBus.pushEvent("nodeinfo"));
-
-        var macsToNodeId = nodesBus.map(".macs");
+        for (var ifname in interfaces)
+          querierAsk.push(ifname);
 
         var stations = [];
         for (var ifname in interfaces) {
-          querierAsk.push(ifname);
-          var stream = new Streams.stations(ip, ifname);
-          stream = stream.map(function (d) {
+          var stream = new Streams.stations(ip, ifname).toProperty();
+          stations.push(stream.map(function (d) {
             for (var station in d)
               d[station].ifname = ifname;
 
             return d;
-          });
-
-          stations.push(stream.toProperty({}));
+          }));
         }
 
         var wifiStream = Bacon.combineAsArray(stations).map(function (d) {
@@ -41,27 +54,12 @@ define([ "vendor/bacon"
         var stream3 = wifiStream.combine(batadvStream, combineWifiBatadv);
 
         stream3 = Bacon.combineTemplate({ stations: stream3
-                                        , macs: macsToNodeId
+                                        , macs: nodesBus.map(".macs")
                                         })
                         .scan({ asked: {}, neighbours: {}}, foldNeighbours(querierAsk))
                         .map(".neighbours");
 
         stream3.onValue(sink);
-      }
-
-      function nodeQuerier(bus) {
-        var out = new Bacon.Bus();
-
-        bus.onValue(function (ifname) {
-          var stream = Streams.nodeInfo(ip, ifname);
-          out.plug(stream.map(function (d) {
-            return { "ifname": ifname
-                   , "nodeInfo": d
-                   };
-          }));
-        });
-
-        return out;
       }
 
       function foldNeighbours(bus) {
