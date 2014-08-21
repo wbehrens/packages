@@ -1,8 +1,10 @@
 "use strict";
 define([ 'lib/gui/signalgraph'
        , 'lib/gui/nodeinfo'
+       , 'lib/gui/statistics'
+       , 'lib/streams'
        , 'lib/neighbourstream'
-       ], function (SignalGraph, NodeInfo, NeighbourStream) {
+       ], function (SignalGraph, NodeInfo, Statistics, Streams, NeighbourStream) {
 
   return function (mgmtBus, nodesBus) {
     function setTitle(node, prefix) {
@@ -25,6 +27,7 @@ define([ 'lib/gui/signalgraph'
     main.className = "main";
 
     var nodeInfoBlock = new NodeInfo();
+    var statistics = new Statistics();
 
     var neighboursDiv = document.createElement("div");
     neighboursDiv.className = "list-neighbour";
@@ -43,6 +46,7 @@ define([ 'lib/gui/signalgraph'
 
     main.appendChild(header);
     content.appendChild(nodeInfoBlock);
+    content.appendChild(statistics);
     content.appendChild(neighboursDiv);
     main.appendChild(content);
 
@@ -52,6 +56,7 @@ define([ 'lib/gui/signalgraph'
     document.body.appendChild(nodesList);
 
     var stopNeighbourStream;
+    var stopStatistics;
 
     function nodeChanged(nodeInfo) {
       neighboursList = {};
@@ -61,6 +66,11 @@ define([ 'lib/gui/signalgraph'
 
       if (stopNeighbourStream)
         stopNeighbourStream();
+
+      if (stopStatistics)
+        stopStatistics();
+
+      statistics.update();
 
       nodeInfoBlock.update(nodeInfo);
       setTitle(nodeInfo, "connecting");
@@ -79,6 +89,12 @@ define([ 'lib/gui/signalgraph'
         stopNeighbourStream();
 
       stopNeighbourStream = stream.onValue(updateNeighbours);
+
+      if (stopStatistics)
+        stopStatistics();
+
+      var statisticsStream = new Streams.statistics(ip);
+      stopStatistics = statisticsStream.onValue(statistics.update);
     }
 
     function newNodes(d) {

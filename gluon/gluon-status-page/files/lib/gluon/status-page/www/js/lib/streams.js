@@ -53,8 +53,14 @@ define(["vendor/bacon", "lib/helper"], function(Bacon, Helper) {
     return simpleStream(url);
   }
 
+  function statistics(ip) {
+    var url = Helper.buildUrl(ip, "dyn/statistics");
+    return simpleStream(url);
+  }
+
   return { nodeInfo: nodeInfo
          , batadv: batadv
          , stations: stations
+         , statistics: statistics
          }
 })
