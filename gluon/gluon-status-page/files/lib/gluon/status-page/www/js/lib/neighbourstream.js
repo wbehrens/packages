@@ -36,7 +36,7 @@ define([ "vendor/bacon"
 
         var stations = [];
         for (var ifname in interfaces) {
-          var stream = new Streams.stations(ip, ifname).toProperty();
+          var stream = new Streams.stations(ip, ifname).toProperty({});
           stations.push(stream.map(function (d) {
             for (var station in d)
               d[station].ifname = ifname;
