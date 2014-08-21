@@ -55,6 +55,10 @@ define([ 'lib/gui/signalgraph'
 
     function nodeArrived(ip) {
       var stream = new NeighbourStream(mgmtBus, nodesBus, ip);
+
+      if (stopNeighbourStream)
+        stopNeighbourStream();
+
       stopNeighbourStream = stream.onValue(updateNeighbours);
     }
 
