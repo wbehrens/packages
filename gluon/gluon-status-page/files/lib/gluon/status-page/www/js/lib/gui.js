@@ -30,14 +30,14 @@ define([ 'lib/gui/signalgraph'
     var neighboursList = {};
 
     var nodesList = document.createElement("ul");
-    nodesList.className ="list-nodes";
+    nodesList.className = "list-nodes";
 
     main.appendChild(header);
     content.appendChild(nodeInfoBlock);
     content.appendChild(neighboursDiv);
     main.appendChild(content);
-    main.appendChild(nodesList);
     document.body.appendChild(main);
+    document.body.appendChild(nodesList);
 
     var stopNeighbourStream;
 
