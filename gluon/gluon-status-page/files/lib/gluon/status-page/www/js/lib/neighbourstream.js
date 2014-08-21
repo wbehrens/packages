@@ -8,13 +8,18 @@ define([ "vendor/bacon"
     function nodeQuerier(bus) {
       var out = new Bacon.Bus();
 
-      bus.onValue(function (ifname) {
-        var stream = Streams.nodeInfo(ip, ifname);
-        out.plug(stream.map(function (d) {
-          return { "ifname": ifname
-                 , "nodeInfo": d
-                 };
-        }));
+      bus.subscribe(function (e) {
+        if (e.isEnd())
+          out.end();
+
+        if (e.hasValue()) {
+          var stream = Streams.nodeInfo(ip, e.value());
+          out.plug(stream.map(function (d) {
+            return { "ifname": e.value()
+                   , "nodeInfo": d
+                   };
+          }));
+        }
       });
 
       return out;
@@ -120,7 +125,7 @@ define([ "vendor/bacon"
       Helper.request(ip, "interfaces").then(magic);
 
       return function () {
-        console.log("FIXME, unsubscribe");
+        querierAsk.end();
       }
     });
   }
