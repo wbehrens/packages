@@ -1,17 +1,22 @@
 "use strict";
 define(["lib/helper"], function (Helper) {
-  return function () {
+  return function (stream) {
     var el = document.createElement("pre");
     el.className = "nodeinfo";
-    el.update = update;
+
+    var stopStream = stream.onValue(update);
 
     function update(statistics) {
-      if (!statistics)
-        el.textContent = ""
-      else
-        el.textContent = JSON.stringify(statistics, undefined, 2);
+      el.textContent = JSON.stringify(statistics, undefined, 2);
     }
 
-    return el;
+    function destroy() {
+      stopStream();
+    }
+
+    return { title: document.createTextNode("Statistik")
+           , content: el
+           , destroy: destroy
+           }
   }
 })

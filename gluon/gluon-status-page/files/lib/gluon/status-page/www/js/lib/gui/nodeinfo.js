@@ -1,9 +1,10 @@
 "use strict";
 define(["lib/helper"], function (Helper) {
-  return function () {
+  return function (nodeInfo) {
     var el = document.createElement("div");
     el.className = "nodeinfo";
-    el.update = update;
+
+    update(nodeInfo);
 
     function dlEntry(dl, dict, key, prettyName) {
       var v = Helper.dictGet(dict, key.split("."));
@@ -31,8 +32,6 @@ define(["lib/helper"], function (Helper) {
     }
     
     function update(nodeInfo) {
-      clear();
-
       var list = document.createElement("dl");
 
       dlEntry(list, nodeInfo, "owner.contact", "Kontakt");
@@ -47,11 +46,9 @@ define(["lib/helper"], function (Helper) {
       el.appendChild(list);
     }
 
-    function clear() {
-      while (el.firstChild)
-        el.removeChild(el.firstChild);
-    }
-
-    return el;
+    return { title: document.createTextNode("Übersicht")
+           , content: el
+           , destroy: function () {}
+           }
   }
 })
