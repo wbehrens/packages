@@ -4,7 +4,7 @@ require([ "vendor/bacon"
         , "lib/streams"
         , "lib/gui"
         ], function(Bacon, Helper, Streams, GUI) {
-  var bootstrapUrl = "http://[fdef:ffc0:3dd7:0:76ea:3aff:febe:223e]/cgi-bin/nodeinfo";
+  var bootstrapUrl = "/cgi-bin/nodeinfo";
 
   function ManagementBus() {
     Bacon.Bus.call(this);
