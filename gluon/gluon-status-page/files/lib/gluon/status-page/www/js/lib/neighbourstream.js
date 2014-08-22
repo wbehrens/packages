@@ -5,6 +5,8 @@ define([ "vendor/bacon"
        ], function(Bacon, Helper, Streams) {
 
   return function (mgmtBus, nodesBus, ip) {
+    var unsubscribe = [];
+
     function nodeQuerier(bus) {
       var asked = {};
       var out = new Bacon.Bus();
@@ -70,13 +72,13 @@ define([ "vendor/bacon"
                                               , nodesBus.map(".macs")
                                               );
 
-        stream.onValue(function (d) {
+        unsubscribe.push(stream.onValue(function (d) {
           for (var station in d)
             if (!("nodeInfo" in d[station]))
               querierAsk.push(d[station].ifname);
-        });
+        }));
 
-        stream.subscribe(sink);
+        unsubscribe.push(stream.subscribe(sink));
 
         for (var ifname in interfaces)
           querierAsk.push(ifname);
@@ -107,6 +109,7 @@ define([ "vendor/bacon"
       Helper.request(ip, "interfaces").then(magic);
 
       return function () {
+        unsubscribe.forEach(function (d) { d() });
         querierAsk.end();
       }
     });
