@@ -2,7 +2,6 @@
 define(["lib/helper"], function (Helper) {
   return function (stream) {
     var el = document.createElement("pre");
-    el.className = "nodeinfo";
 
     var stopStream = stream.onValue(update);
 

@@ -11,6 +11,30 @@ define([ 'lib/gui/nodeinfo'
                    , NeighbourStream
                    ) {
 
+  function Container(parent) {
+    var el = document.createElement("section");
+    parent.appendChild(el);
+
+    el.push = function (child) {
+      var header = document.createElement("h2");
+      header.appendChild(child.title);
+
+      var div = document.createElement("div");
+      div.node = child;
+      div.appendChild(header);
+      div.appendChild(child.content);
+
+      el.appendChild(div);
+
+      return function () {
+        div.node.destroy();
+        el.removeChild(div);
+      }
+    }
+
+    return el;
+  }
+
   return function (mgmtBus, nodesBus) {
     function setTitle(node, prefix) {
       var title = node?node.hostname:"(not connected)";
@@ -26,8 +50,6 @@ define([ 'lib/gui/nodeinfo'
     var h1 = document.createElement("h1");
     header.appendChild(h1);
 
-    var content = document.createElement("section");
-
     var main = document.createElement("div");
     main.className = "main";
 
@@ -39,7 +61,8 @@ define([ 'lib/gui/nodeinfo'
     nodesList.className = "list-nodes";
 
     main.appendChild(header);
-    main.appendChild(content);
+
+    var content = new Container(main);
 
     setTitle();
 
@@ -49,26 +72,16 @@ define([ 'lib/gui/nodeinfo'
     function nodeChanged(nodeInfo) {
       setTitle(nodeInfo, "connecting");
 
-      if (nodeInfoBlock) {
-        content.removeChild(nodeInfoBlock.content);
-        nodeInfoBlock.destroy();
-        nodeInfoBlock = null;
-      }
+      if (nodeInfoBlock)
+        nodeInfoBlock();
 
-      if (statisticsBlock) {
-        content.removeChild(statisticsBlock.content);
-        statisticsBlock.destroy();
-        statisticsBlock = null;
-      }
+      if (statisticsBlock)
+        statisticsBlock();
 
-      if (neighbourListBlock) {
-        content.removeChild(neighbourListBlock.content);
-        neighbourListBlock.destroy();
-        neighbourListBlock = null;
-      }
+      if (neighbourListBlock)
+        neighbourListBlock();
 
-      nodeInfoBlock = new NodeInfo(nodeInfo);
-      content.appendChild(nodeInfoBlock.content);
+      nodeInfoBlock = content.push(new NodeInfo(nodeInfo));
     }
 
     function nodeNotArrived(nodeInfo) {
@@ -81,11 +94,8 @@ define([ 'lib/gui/nodeinfo'
       var neighbourStream = new NeighbourStream(mgmtBus, nodesBus, ip);
       var statisticsStream = new Streams.statistics(ip);
 
-      statisticsBlock = new Statistics(statisticsStream);
-      content.appendChild(statisticsBlock.content);
-
-      neighbourListBlock = new NeighbourList(neighbourStream, mgmtBus);
-      content.appendChild(neighbourListBlock.content);
+      statisticsBlock = content.push(new Statistics(statisticsStream));
+      neighbourListBlock = content.push(new NeighbourList(neighbourStream, mgmtBus));
     }
 
     function newNodes(d) {

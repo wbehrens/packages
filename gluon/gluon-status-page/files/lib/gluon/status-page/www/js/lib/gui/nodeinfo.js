@@ -2,7 +2,6 @@
 define(["lib/helper"], function (Helper) {
   return function (nodeInfo) {
     var el = document.createElement("div");
-    el.className = "nodeinfo";
 
     update(nodeInfo);
 
