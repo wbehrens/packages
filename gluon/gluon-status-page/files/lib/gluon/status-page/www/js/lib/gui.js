@@ -52,16 +52,19 @@ define([ 'lib/gui/nodeinfo'
       if (nodeInfoBlock) {
         content.removeChild(nodeInfoBlock.content);
         nodeInfoBlock.destroy();
+        nodeInfoBlock = null;
       }
 
       if (statisticsBlock) {
         content.removeChild(statisticsBlock.content);
         statisticsBlock.destroy();
+        statisticsBlock = null;
       }
 
       if (neighbourListBlock) {
         content.removeChild(neighbourListBlock.content);
         neighbourListBlock.destroy();
+        neighbourListBlock = null;
       }
 
       nodeInfoBlock = new NodeInfo(nodeInfo);
