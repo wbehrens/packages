@@ -68,7 +68,7 @@ define([ "lib/helper"
                           , d.nodeInfo.software.firmware.release
                           ].join(', ');
         } else {
-          hostname.textContent = station;
+          hostname.textContent = d.id;
           p.textContent = d.ifname;
         }
       }

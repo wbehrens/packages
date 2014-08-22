@@ -87,9 +87,11 @@ define([ "vendor/bacon"
       function combine(wifi, batadv, macs) {
         var stations = combineWifiBatadv(wifi, batadv);
 
-        for (var station in stations)
+        for (var station in stations) {
+          stations[station].id = station;
           if (station in macs)
             stations[station].nodeInfo = macs[station];
+        }
 
         return stations;
       }
