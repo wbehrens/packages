@@ -88,6 +88,7 @@ define([ "lib/helper"
         if (!(station in d)) {
           el.removeChild(children[station]);
           children[station].destroy();
+          delete children[station];
         }
 
       for (var station in d)
@@ -105,6 +106,7 @@ define([ "lib/helper"
       for (var station in children) {
         el.removeChild(children[station]);
         children[station].destroy();
+        delete children[station];
       }
     }
 
