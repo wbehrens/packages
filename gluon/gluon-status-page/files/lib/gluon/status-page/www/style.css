@@ -25,6 +25,7 @@ a:hover {
 }
 
 header {
+  display: flex;
   padding: 0 16pt;
   background: #dc0067;
   color: rgba(255, 255, 255, 0.9);
@@ -32,6 +33,40 @@ header {
 
 header h1 {
   padding: 18pt 0;
+  flex: 1;
+}
+
+header button svg path {
+  fill: rgba(255, 255, 255, 0.87);
+}
+
+button {
+  border: none;
+  padding: 0;
+  background: transparent;
+  outline: none;
+  margin: 8pt 0;
+  padding: 8pt;
+  display: inline-block;
+  width: 24pt;
+  height: 24pt;
+  box-sizing: content-box;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+button:active {
+  background: rgba(255, 255, 255, 0.30);
+  border-radius: 24pt;
+  border: none;
+}
+
+button svg {
+  width: 24pt;
+  height: 24pt;
+  vertical-align: bottom;
 }
 
 h1 {
