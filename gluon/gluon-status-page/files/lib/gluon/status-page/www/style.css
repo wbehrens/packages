@@ -89,9 +89,15 @@ dd {
 }
 
 .list-neighbour .info {
-  padding: 1em;
+  padding: 8pt 8pt;
   background: rgba(0, 0, 0, 0.05);
   color: rgba(0, 0, 0, 0.54);
+  font-size: 9pt;
+}
+
+.list-neighbour .info h3 {
+  font-size: 12pt;
+  padding-bottom: 5pt;
 }
 
 canvas.signal-history {
