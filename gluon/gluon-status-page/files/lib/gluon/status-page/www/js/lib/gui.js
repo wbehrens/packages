@@ -36,11 +36,8 @@ define([ 'lib/gui/nodeinfo'
   }
 
   return function (mgmtBus, nodesBus) {
-    function setTitle(node, prefix) {
+    function setTitle(node, state) {
       var title = node?node.hostname:"(not connected)";
-
-      if (prefix)
-        title = prefix + " " + title
 
       document.title = title;
       h1.textContent = title;
@@ -49,11 +46,30 @@ define([ 'lib/gui/nodeinfo'
       icon.className = "icon-down-dir";
 
       h1.appendChild(icon);
+
+      switch (state) {
+        case "connect":
+          stateIcon.className = "icon-arrows-cw animate-spin";
+          break;
+        case "fail":
+          stateIcon.className = "icon-attention";
+          break;
+        default:
+          stateIcon.className = "";
+          break;
+      }
     }
 
     var header = document.createElement("header");
     var h1 = document.createElement("h1");
     header.appendChild(h1);
+
+    var icons = document.createElement("p");
+    icons.className = "icons";
+    header.appendChild(icons);
+
+    var stateIcon = document.createElement("i");
+    icons.appendChild(stateIcon);
 
     var nodeInfoBlock;
     var statisticsBlock;
@@ -71,7 +87,7 @@ define([ 'lib/gui/nodeinfo'
     document.body.appendChild(nodesList);
 
     function nodeChanged(nodeInfo) {
-      setTitle(nodeInfo, "connecting");
+      setTitle(nodeInfo, "connect");
 
       if (nodeInfoBlock)
         nodeInfoBlock();
@@ -86,7 +102,7 @@ define([ 'lib/gui/nodeinfo'
     }
 
     function nodeNotArrived(nodeInfo) {
-      setTitle(nodeInfo, "failed to connect");
+      setTitle(nodeInfo, "fail");
     }
 
     function nodeArrived(nodeInfo, ip) {
