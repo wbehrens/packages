@@ -110,7 +110,7 @@ define([ "lib/helper"
       }
     }
 
-    return { title: document.createTextNode("Nachbarn")
+    return { title: document.createTextNode("Nachbarknoten")
            , content: el
            , destroy: destroy
            }
