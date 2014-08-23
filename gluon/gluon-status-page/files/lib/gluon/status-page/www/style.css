@@ -1,4 +1,6 @@
 @import "html5-doctor-reset-stylesheet.css";
+@import "iconfont/css/animation.css";
+@import "iconfont/css/statuspage.css";
 
 body {
   background: rgba(0, 0, 0, 0.12);
@@ -42,11 +44,6 @@ header h1 {
 header h1:hover {
   text-decoration: underline;
   cursor: pointer;
-}
-
-header h1:after {
-  content: '▾';
-  margin-left: 4px;
 }
 
 h1 {

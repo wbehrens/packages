@@ -44,6 +44,11 @@ define([ 'lib/gui/nodeinfo'
 
       document.title = title;
       h1.textContent = title;
+
+      var icon = document.createElement("i");
+      icon.className = "icon-down-dir";
+
+      h1.appendChild(icon);
     }
 
     var header = document.createElement("header");
