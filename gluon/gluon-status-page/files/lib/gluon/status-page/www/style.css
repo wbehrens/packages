@@ -29,10 +29,13 @@ header {
   height: 20vh;
   z-index: -1;
   box-shadow: 0px 5px 6px rgba(0, 0, 0, 0.16), 0px 1.5px 3px rgba(0, 0, 0, 0.23);
+  white-space: nowrap;
 }
 
 header h1 {
   padding: 18px 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
   flex: 1;
 }
 
@@ -54,6 +57,8 @@ button {
 }
 
 button:hover {
+header h1:hover {
+  text-decoration: underline;
   cursor: pointer;
 }
 
@@ -67,6 +72,9 @@ button svg {
   width: 24px;
   height: 24px;
   vertical-align: bottom;
+header h1:after {
+  content: '▾';
+  margin-left: 4px;
 }
 
 h1 {
