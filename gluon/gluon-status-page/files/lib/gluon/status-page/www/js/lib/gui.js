@@ -78,10 +78,6 @@ define([ 'lib/gui/nodeinfo'
     var stateIcon = document.createElement("i");
     icons.appendChild(stateIcon);
 
-    var nodeInfoBlock;
-    var statisticsBlock;
-    var neighbourListBlock;
-
     var nodesList = document.createElement("ul");
     nodesList.className = "list-nodes";
 
@@ -97,8 +93,7 @@ define([ 'lib/gui/nodeinfo'
       setTitle(nodeInfo, "connect");
 
       content.clear();
-
-      nodeInfoBlock = content.push(new NodeInfo(nodeInfo));
+      content.push(new NodeInfo(nodeInfo));
     }
 
     function nodeNotArrived(nodeInfo) {
@@ -111,8 +106,8 @@ define([ 'lib/gui/nodeinfo'
       var neighbourStream = new NeighbourStream(mgmtBus, nodesBus, ip);
       var statisticsStream = new Streams.statistics(ip);
 
-      statisticsBlock = content.push(new Statistics(statisticsStream));
-      neighbourListBlock = content.push(new NeighbourList(neighbourStream, mgmtBus));
+      content.push(new Statistics(statisticsStream));
+      content.push(new NeighbourList(neighbourStream, mgmtBus));
     }
 
     function newNodes(d) {
