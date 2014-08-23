@@ -19,6 +19,28 @@
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24);
   overflow-y: auto;
   max-height: 80vh;
+
+  transform-origin: top left;
+  -webkit-animation: new-menu-animation .08s ease-out forwards;
+  -moz-animation: new-menu-animation .08s ease-out forwards;
+}
+
+@-webkit-keyframes new-menu-animation {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@-moz-keyframes new-menu-animation {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
 }
 
 .menu li {
