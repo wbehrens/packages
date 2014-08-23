@@ -4,7 +4,7 @@ body {
   background: rgba(0, 0, 0, 0.12);
   font-family: Roboto, Lucida Grande, sans, Arial;
   color: rgba(0, 0, 0, 0.87);
-  font-size: 11pt;
+  font-size: 14px;
 }
 
 
@@ -19,7 +19,7 @@ a:hover {
 
 header {
   display: flex;
-  padding: 0 16pt;
+  padding: 0 14px;
   background: #dc0067;
   color: rgba(255, 255, 255, 0.9);
   position: fixed;
@@ -28,11 +28,11 @@ header {
   box-sizing: border-box;
   height: 20vh;
   z-index: -1;
-  box-shadow: 0pt 1.5pt 6pt rgba(0, 0, 0, 0.16), 0pt 1.5pt 3pt rgba(0, 0, 0, 0.23);
+  box-shadow: 0px 5px 6px rgba(0, 0, 0, 0.16), 0px 1.5px 3px rgba(0, 0, 0, 0.23);
 }
 
 header h1 {
-  padding: 18pt 0;
+  padding: 18px 0;
   flex: 1;
 }
 
@@ -45,11 +45,11 @@ button {
   padding: 0;
   background: transparent;
   outline: none;
-  margin: 8pt 0;
-  padding: 8pt;
+  margin: 8px 0;
+  padding: 8px;
   display: inline-block;
-  width: 24pt;
-  height: 24pt;
+  width: 24px;
+  height: 24px;
   box-sizing: content-box;
 }
 
@@ -59,33 +59,33 @@ button:hover {
 
 button:active {
   background: rgba(255, 255, 255, 0.30);
-  border-radius: 24pt;
+  border-radius: 24px;
   border: none;
 }
 
 button svg {
-  width: 24pt;
-  height: 24pt;
+  width: 24px;
+  height: 24px;
   vertical-align: bottom;
 }
 
 h1 {
-  font-size: 20pt;
+  font-size: 24px;
   font-weight: bold;
 }
 
 h2 {
-  padding: 12pt 8pt;
-  font-size: 11pt;
+  padding: 16px 16px;
+  font-size: 16px;
   color: rgba(0, 0, 0, 0.54);
 }
 
 section {
   max-width: 90vw;
-  margin: 64pt auto 24pt auto;
+  margin: 64px auto 24px auto;
   display: flex;
   background: rgb(255, 255, 255);
-  box-shadow: 0pt 5pt 20pt rgba(0, 0, 0, 0.19), 0pt 3pt 6pt rgba(0, 0, 0, 0.23);
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.19), 0px 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 section > div {
@@ -97,45 +97,45 @@ section > div {
 }
 
 section > div + div {
-  border-width: 0 0 0 1pt;
+  border-width: 0 0 0 1px;
 }
 
 dl, pre {
-  padding: 0 8pt 16pt;
+  padding: 0 16px 16px;
 }
 
 dt {
   font-weight: bold;
   color: rgba(0, 0, 0, 0.87);
-  margin-bottom: 3pt;
+  margin-bottom: 4px;
 }
 
 dd {
   font-weight: normal;
   color: rgba(0, 0, 0, 0.54);
-  padding-bottom: 8pt;
+  padding-bottom: 16px;
 }
 
 .list-neighbour {
-  padding: 0pt 8pt;
+  padding: 0px 16px;
 }
 
 .list-neighbour li {
   box-sizing: border-box;
-  padding: 0 0 8pt;
+  padding: 0 0 16px;
   display: block;
 }
 
 .list-neighbour .info {
-  padding: 8pt 8pt;
+  padding: 16px;
   background: rgba(0, 0, 0, 0.05);
   color: rgba(0, 0, 0, 0.54);
-  font-size: 9pt;
+  font-size: 12px;
 }
 
 .list-neighbour .info h3 {
-  font-size: 12pt;
-  padding-bottom: 5pt;
+  font-size: 16px;
+  padding-bottom: 5px;
 }
 
 canvas.signal-history {
@@ -146,11 +146,11 @@ canvas.signal-history {
 @media only screen and (max-width: 1250px) {
   section {
     max-width: none;
-    margin: 56pt 0 0;
+    margin: 56px 0 0;
   }
 
   header {
-    height: 56pt;
+    height: 56px;
     z-index: 1;
   }
 }
@@ -161,6 +161,6 @@ canvas.signal-history {
   }
 
   section > div + div {
-    border-width: 1pt 0 0 0;
+    border-width: 1px 0 0 0;
   }
 }
