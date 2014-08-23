@@ -1,6 +1,7 @@
 @import "html5-doctor-reset-stylesheet.css";
 @import "iconfont/css/animation.css";
 @import "iconfont/css/statuspage.css";
+@import "menu.css";
 
 body {
   background: rgba(0, 0, 0, 0.12);
@@ -36,7 +37,7 @@ header {
 
 header h1, header .icons {
   font-size: 24px;
-  padding: 18px 0;
+  margin: 18px 0;
 }
 
 header h1 {

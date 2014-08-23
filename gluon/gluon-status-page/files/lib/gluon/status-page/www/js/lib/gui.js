@@ -2,11 +2,13 @@
 define([ 'lib/gui/nodeinfo'
        , 'lib/gui/statistics'
        , 'lib/gui/neighbourlist'
+       , 'lib/gui/menu'
        , 'lib/streams'
        , 'lib/neighbourstream'
        ], function ( NodeInfo
                    , Statistics
                    , NeighbourList
+                   , Menu
                    , Streams
                    , NeighbourStream
                    ) {
@@ -67,9 +69,31 @@ define([ 'lib/gui/nodeinfo'
       }
     }
 
+    var nodes = [];
+
+    function nodeMenu() {
+      var myNodes = nodes.slice();
+
+      myNodes.sort(function (a, b) {
+        a = a.hostname;
+        b = b.hostname;
+        return (a<b)?-1:(a>b);
+      });
+
+      var menu = myNodes.map(function (d) {
+        return [d.hostname, function () {
+          mgmtBus.pushEvent("goto", d);
+        }]
+      });
+
+      new Menu(menu).apply(this);
+    }
+
     var header = document.createElement("header");
     var h1 = document.createElement("h1");
     header.appendChild(h1);
+
+    h1.onclick = nodeMenu;
 
     var icons = document.createElement("p");
     icons.className = "icons";
@@ -111,24 +135,9 @@ define([ 'lib/gui/nodeinfo'
     }
 
     function newNodes(d) {
-      while (nodesList.firstChild)
-        nodesList.removeChild(nodesList.firstChild);
-
-      for (var nodeId in d) {
-        var nodeInfo = d[nodeId];
-        var li = document.createElement("li");
-        var a = document.createElement("a");
-        a.textContent = nodeInfo.hostname;
-        a.href = "#";
-        a.nodeInfo = nodeInfo;
-        a.onclick = function () {
-          mgmtBus.pushEvent("goto", this.nodeInfo);
-          return false;
-        }
-
-        li.appendChild(a);
-        nodesList.appendChild(li);
-      }
+      nodes = [];
+      for (var nodeId in d)
+        nodes.push(d[nodeId]);
     }
 
     mgmtBus.onEvent({ "goto": nodeChanged
