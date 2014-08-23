@@ -4,13 +4,11 @@ define([ 'lib/gui/nodeinfo'
        , 'lib/gui/neighbourlist'
        , 'lib/streams'
        , 'lib/neighbourstream'
-       , 'vendor/svg-injector'
        ], function ( NodeInfo
                    , Statistics
                    , NeighbourList
                    , Streams
                    , NeighbourStream
-                   , SVGInjector
                    ) {
 
   function Container(parent) {
@@ -51,15 +49,6 @@ define([ 'lib/gui/nodeinfo'
     var header = document.createElement("header");
     var h1 = document.createElement("h1");
     header.appendChild(h1);
-
-    var menuButton = document.createElement("button");
-    menuButton.onclick = function () {console.log("foo")}
-
-    var icon = document.createElement("img");
-    icon.src = "icons/dots-vertical.svg";
-    SVGInjector(icon);
-    menuButton.appendChild(icon);
-    header.appendChild(menuButton);
 
     var nodeInfoBlock;
     var statisticsBlock;

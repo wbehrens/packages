@@ -39,39 +39,11 @@ header h1 {
   flex: 1;
 }
 
-header button svg path {
-  fill: rgba(255, 255, 255, 0.87);
-}
-
-button {
-  border: none;
-  padding: 0;
-  background: transparent;
-  outline: none;
-  margin: 8px 0;
-  padding: 8px;
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  box-sizing: content-box;
-}
-
-button:hover {
 header h1:hover {
   text-decoration: underline;
   cursor: pointer;
 }
 
-button:active {
-  background: rgba(255, 255, 255, 0.30);
-  border-radius: 24px;
-  border: none;
-}
-
-button svg {
-  width: 24px;
-  height: 24px;
-  vertical-align: bottom;
 header h1:after {
   content: '▾';
   margin-left: 4px;
