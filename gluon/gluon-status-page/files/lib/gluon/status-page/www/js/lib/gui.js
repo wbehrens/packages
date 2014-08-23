@@ -102,16 +102,11 @@ define([ 'lib/gui/nodeinfo'
     var stateIcon = document.createElement("i");
     icons.appendChild(stateIcon);
 
-    var nodesList = document.createElement("ul");
-    nodesList.className = "list-nodes";
-
     document.body.appendChild(header);
 
     setTitle();
 
     var content = new Container(document.body);
-
-    document.body.appendChild(nodesList);
 
     function nodeChanged(nodeInfo) {
       setTitle(nodeInfo, "connect");
