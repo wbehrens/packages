@@ -16,7 +16,6 @@ define(function () {
       container.className = "menu";
       container.style.top = offset.top + "px";
       container.style.left = offset.left + "px";
-      document.body.appendChild(container);
 
       background.onclick = destroy;
 
@@ -31,6 +30,8 @@ define(function () {
 
         container.appendChild(li);
       });
+
+      document.body.appendChild(container);
 
       function destroy() {
         document.body.classList.remove("noscroll");
