@@ -61,9 +61,6 @@ define([ 'lib/gui/nodeinfo'
     menuButton.appendChild(icon);
     header.appendChild(menuButton);
 
-    var main = document.createElement("div");
-    main.className = "main";
-
     var nodeInfoBlock;
     var statisticsBlock;
     var neighbourListBlock;
@@ -71,13 +68,12 @@ define([ 'lib/gui/nodeinfo'
     var nodesList = document.createElement("ul");
     nodesList.className = "list-nodes";
 
-    main.appendChild(header);
-
-    var content = new Container(main);
+    document.body.appendChild(header);
 
     setTitle();
 
-    document.body.appendChild(main);
+    var content = new Container(document.body);
+
     document.body.appendChild(nodesList);
 
     function nodeChanged(nodeInfo) {

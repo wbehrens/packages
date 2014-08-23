@@ -17,18 +17,18 @@ a:hover {
   text-decoration: underline;
 }
 
-.main {
-  margin: 2em auto;
-  max-width: 1200px;
-  background: rgb(255, 255, 255);
-  box-shadow: 0pt 5pt 20pt rgba(0, 0, 0, 0.19), 0pt 3pt 6pt rgba(0, 0, 0, 0.23);
-}
-
 header {
   display: flex;
   padding: 0 16pt;
   background: #dc0067;
   color: rgba(255, 255, 255, 0.9);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  box-sizing: border-box;
+  height: 20vh;
+  z-index: -1;
+  box-shadow: 0pt 1.5pt 6pt rgba(0, 0, 0, 0.16), 0pt 1.5pt 3pt rgba(0, 0, 0, 0.23);
 }
 
 header h1 {
@@ -81,7 +81,11 @@ h2 {
 }
 
 section {
+  max-width: 90vw;
+  margin: 64pt auto 24pt auto;
   display: flex;
+  background: rgb(255, 255, 255);
+  box-shadow: 0pt 5pt 20pt rgba(0, 0, 0, 0.19), 0pt 3pt 6pt rgba(0, 0, 0, 0.23);
 }
 
 section > div {
@@ -95,7 +99,6 @@ section > div {
 section > div + div {
   border-width: 0 0 0 1pt;
 }
-
 
 dl, pre {
   padding: 0 8pt 16pt;
@@ -141,9 +144,14 @@ canvas.signal-history {
 }
 
 @media only screen and (max-width: 1250px) {
-  .main {
-    margin: 0;
-    border: none;
+  section {
+    max-width: none;
+    margin: 56pt 0 0;
+  }
+
+  header {
+    height: 56pt;
+    z-index: 1;
   }
 }
 
