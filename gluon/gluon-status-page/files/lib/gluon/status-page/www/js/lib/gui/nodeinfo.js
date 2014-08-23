@@ -33,6 +33,7 @@ define(["lib/helper"], function (Helper) {
     function update(nodeInfo) {
       var list = document.createElement("dl");
 
+      dlEntry(list, nodeInfo, "hostname", "Hostname");
       dlEntry(list, nodeInfo, "owner.contact", "Kontakt");
       dlEntry(list, nodeInfo, "hardware.model", "Modell");
       dlEntry(list, nodeInfo, "network.mac", "Primäre MAC");
