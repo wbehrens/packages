@@ -32,6 +32,13 @@ define([ 'lib/gui/nodeinfo'
       }
     }
 
+    el.clear = function () {
+      while (el.firstChild) {
+        el.firstChild.node.destroy();
+        el.removeChild(el.firstChild);
+      }
+    }
+
     return el;
   }
 
@@ -89,14 +96,7 @@ define([ 'lib/gui/nodeinfo'
     function nodeChanged(nodeInfo) {
       setTitle(nodeInfo, "connect");
 
-      if (nodeInfoBlock)
-        nodeInfoBlock();
-
-      if (statisticsBlock)
-        statisticsBlock();
-
-      if (neighbourListBlock)
-        neighbourListBlock();
+      content.clear();
 
       nodeInfoBlock = content.push(new NodeInfo(nodeInfo));
     }
