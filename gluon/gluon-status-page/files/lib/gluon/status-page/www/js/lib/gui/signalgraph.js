@@ -4,9 +4,7 @@ define(function () {
     var i = 0;
     var v = null;
 
-
     var ctx = canvas.getContext('2d');
-    var canvasData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
     var graphWidth;
 
