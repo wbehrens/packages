@@ -134,8 +134,8 @@ define(["lib/helper"], function (Helper) {
     var el = document.createElement("div");
     var table = document.createElement("table");
 
-    mkRow(table, children, "Uptime", stream.map(".uptime").map(prettyUptime));
-    mkRow(table, children, "Load", stream.map(".loadavg").map(prettyLoad));
+    mkRow(table, children, "Laufzeit", stream.map(".uptime").map(prettyUptime));
+    mkRow(table, children, "Systemlast", stream.map(".loadavg").map(prettyLoad));
     mkRow(table, children, "RAM", stream.map(".memory").map(prettyRAM));
     mkRow(table, children, "NVRAM", stream.map(".rootfs_usage").map(prettyNVRAM));
     mkRow(table, children, "Gateway", stream.map(".gateway"));
@@ -151,9 +151,9 @@ define(["lib/helper"], function (Helper) {
 
     table = document.createElement("table");
 
-    mkTrafficRow(table, children, "TX", stream.map(".traffic.rx"));
-    mkTrafficRow(table, children, "RX", stream.map(".traffic.tx"));
-    mkTrafficRow(table, children, "Forward", stream.map(".traffic.forward"));
+    mkTrafficRow(table, children, "Gesendet", stream.map(".traffic.rx"));
+    mkTrafficRow(table, children, "Empfangen", stream.map(".traffic.tx"));
+    mkTrafficRow(table, children, "Weitergeleitet", stream.map(".traffic.forward"));
 
     el.appendChild(table);
 

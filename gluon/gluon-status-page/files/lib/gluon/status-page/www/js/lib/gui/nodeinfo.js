@@ -33,12 +33,12 @@ define(["lib/helper"], function (Helper) {
     function update(nodeInfo) {
       var list = document.createElement("dl");
 
-      dlEntry(list, nodeInfo, "hostname", "Hostname");
+      dlEntry(list, nodeInfo, "hostname", "Knotenname");
       dlEntry(list, nodeInfo, "owner.contact", "Kontakt");
       dlEntry(list, nodeInfo, "hardware.model", "Modell");
       dlEntry(list, nodeInfo, "network.mac", "Primäre MAC");
       dlEntry(list, nodeInfo, "network.addresses", "IP-Adresse");
-      dlEntry(list, nodeInfo, "software.firmware.release", "Firmware Release");
+      dlEntry(list, nodeInfo, "software.firmware.release", "Firmware");
       dlEntry(list, nodeInfo, "software.fastd.enabled", "Mesh-VPN");
       dlEntry(list, nodeInfo, "software.autoupdater.enabled", "Automatische Updates");
       dlEntry(list, nodeInfo, "software.autoupdater.branch", "Branch");
