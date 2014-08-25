@@ -53,23 +53,21 @@ define([ "vendor/bacon"
     }
 
     function magic(interfaces) {
-      var wifiStream = Bacon.fromArray(Object.keys(interfaces))
-                         .flatMap(stationsStream)
-                         .scan({}, function (a, b) {
-                           return a[b[0]] = b[1], a;
-                         });
+      var ifnames = Object.keys(interfaces);
+      querierAsk.push(ifnames);
+
+      var wifiStream = Bacon.fromArray(ifnames)
+                            .flatMap(stationsStream)
+                            .scan({}, function (a, b) {
+                              return a[b[0]] = b[1], a;
+                            });
 
       var batadvStream = new Streams.batadv(ip).toProperty({});
 
-      var stream = Bacon.combineWith(combine, wifiStream
-                                            , batadvStream.map(extractIfname)
-                                            , nodesBus.map(".macs")
-                                            );
-
-      for (var ifname in interfaces)
-        querierAsk.push(ifname);
-
-      return stream;
+      return Bacon.combineWith(combine, wifiStream
+                                      , batadvStream.map(extractIfname)
+                                      , nodesBus.map(".macs")
+                                      );
     }
 
     function combine(wifi, batadv, macs) {
