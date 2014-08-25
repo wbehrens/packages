@@ -28,12 +28,10 @@ define([ "vendor/bacon"
     var querier = querierAsk.flatMap(nodeQuerier());
     querier.map(".nodeInfo").onValue(mgmtBus, "pushEvent", "nodeinfo");
 
-    function wrapIfname(ifname) {
-      return function (d) {
-        var a = {};
-        a[ifname] = d;
-        return a;
-      }
+    function wrapIfname(ifname, d) {
+      var a = {};
+      a[ifname] = d;
+      return a;
     }
 
     function extractIfname(d) {
@@ -53,11 +51,10 @@ define([ "vendor/bacon"
     }
 
     function magic(interfaces) {
-      var stations = [];
-      for (var ifname in interfaces) {
+      var stations = Object.keys(interfaces).map(function (ifname) {
         var stream = new Streams.stations(ip, ifname).toProperty({});
-        stations.push(stream.map(wrapIfname(ifname)));
-      }
+        return stream.map(wrapIfname, ifname);
+      });
 
       var wifiStream = Bacon.combineAsArray(stations).map(function (d) {
         return d.reduce(function (p, c) {
