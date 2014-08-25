@@ -70,10 +70,8 @@ define([ "lib/helper"
           p.textContent = [ d.nodeInfo.hardware.model
                           , d.nodeInfo.software.firmware.release
                           ].join(', ');
-        } else {
+        } else
           hostname.textContent = d.id;
-          p.textContent = d.ifname;
-        }
       }
     }
   }
