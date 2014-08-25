@@ -3,8 +3,10 @@ define([ "lib/helper"
        , "lib/gui/signalgraph"
        ], function (Helper, SignalGraph) {
 
-  function listEntry(parent, stream, mgmtBus) {
+  function ListEntry(parent, id, stream, mgmtBus) {
     var el = document.createElement("li");
+    el.id = id;
+
     var wrapper = document.createElement("div");
     wrapper.className = "wrapper";
 
@@ -38,13 +40,15 @@ define([ "lib/helper"
     return el;
 
     function update(d) {
-      var signal = d.signal;
-      var inactive = d.inactive;
+      if ("wifi" in d) {
+        var signal = d.wifi.signal;
+        var inactive = d.wifi.inactive;
 
-      if (inactive > 200)
-        signal = null;
+        if (inactive > 200)
+          signal = null;
 
-      chart(signal);
+        chart(signal);
+      }
 
       if (!infoSet) {
         if ("nodeInfo" in d) {
@@ -63,8 +67,7 @@ define([ "lib/helper"
             hostname.removeChild(hostname.firstChild);
 
           hostname.appendChild(link);
-          p.textContent = [ d.ifname
-                          , d.nodeInfo.hardware.model
+          p.textContent = [ d.nodeInfo.hardware.model
                           , d.nodeInfo.software.firmware.release
                           ].join(', ');
         } else {
@@ -75,38 +78,108 @@ define([ "lib/helper"
     }
   }
 
-  return function (stream, mgmtBus) {
-    var el = document.createElement("ul");
-    el.className = "list-neighbour";
+  function Interface(iface, stream, mgmtBus) {
+    var el = document.createElement("div");
+    el.ifname = iface;
 
-    var stopStream = stream.onValue(update);
+    var h = document.createElement("h3");
+    h.textContent = iface;
+    el.appendChild(h);
 
-    var children = {};
+    var list = document.createElement("ul");
+    list.className = "list-neighbour";
+    el.appendChild(list);
+
+    var stopStream = stream.skipDuplicates(sameKeys).onValue(update);
 
     function update(d) {
-      for (var station in children)
-        if (!(station in d)) {
-          el.removeChild(children[station]);
-          children[station].destroy();
-          delete children[station];
+      var have = {};
+      var remove = [];
+      if (list.hasChildNodes()) {
+        var children = list.childNodes;
+        for (var i = 0; i < children.length; i++) {
+          var a = children[i];
+          if (a.id in d)
+            have[a.id] = true;
+          else {
+            a.destroy();
+            remove.push(a);
+          }
         }
+      }
 
-      for (var station in d)
-        if (!(station in children)) {
+      remove.forEach(list.removeChild);
+
+      for (var k in d)
+        if (!(k in have)) {
           var bus = new Bacon.Bus();
-          children[station] = new listEntry(el, bus, mgmtBus);
+          new ListEntry(list, k, bus, mgmtBus);
+          bus.push(d[k]);
+          bus.plug(stream.map("." + k));
+        }
+    }
 
-          bus.push(d[station]);
-          bus.plug(stream.map("." + station));
+
+    el.destroy = function () {
+      stopStream();
+
+      while (list.firstChild) {
+        list.firstChild.destroy();
+        list.removeChild(list.firstChild);
+      }
+
+      el.removeChild(h);
+      el.removeChild(list);
+    }
+
+    return el;
+  }
+
+  function sameKeys(a, b) {
+    var a = Object.keys(a).sort();
+    var b = Object.keys(b).sort();
+
+    return !(a < b || a > b);
+  }
+
+  return function (stream, mgmtBus) {
+    var el = document.createElement("div");
+
+    var stopStream = stream.skipDuplicates(sameKeys).onValue(update);
+
+    function update(d) {
+      var have = {};
+      var remove = [];
+      if (el.hasChildNodes()) {
+        var children = el.childNodes;
+        for (var i = 0; i < children.length; i++) {
+          var a = children[i];
+          if (a.ifname in d)
+            have[a.ifname] = true;
+          else {
+            a.destroy();
+            remove.push(a);
+          }
+        }
+      }
+
+      remove.forEach(el.removeChild);
+
+      for (var k in d)
+        if (!(k in have)) {
+          var bus = new Bacon.Bus();
+          el.appendChild(new Interface(k, bus, mgmtBus));
+          bus.push(d[k]);
+          bus.plug(stream.map("." + k));
         }
     }
 
     function destroy() {
       stopStream();
-      for (var station in children) {
-        el.removeChild(children[station]);
-        children[station].destroy();
-        delete children[station];
+
+      while (el.firstChild) {
+        el.firstChild.destroy();
+        el.removeChild(el.firstChild);
       }
     }
 

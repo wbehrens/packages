@@ -40,26 +40,41 @@ define([ "vendor/bacon"
     querier.map(".nodeInfo").onValue(mgmtBus.pushEvent("nodeinfo"));
 
     return Bacon.fromBinder(function (sink) {
-      function addIfname(ifname) {
+      function wrapIfname(ifname) {
         return function (d) {
-          for (var station in d)
-            d[station].ifname = ifname;
-
-          return d;
+          var a = {};
+          a[ifname] = d;
+          return a;
         }
+      }
+
+      function extractIfname(d) {
+        var r = {};
+
+        for (var station in d) {
+          var ifname = d[station].ifname;
+          delete d[station].ifname;
+
+          if (!(ifname in r))
+            r[ifname] = {};
+
+          r[ifname][station] = d[station];
+        }
+
+        return r;
       }
 
       function magic(interfaces) {
         var stations = [];
         for (var ifname in interfaces) {
           var stream = new Streams.stations(ip, ifname).toProperty({});
-          stations.push(stream.map(addIfname(ifname)));
+          stations.push(stream.map(wrapIfname(ifname)));
         }
 
         var wifiStream = Bacon.combineAsArray(stations).map(function (d) {
           return d.reduce(function (p, c) {
-            for (var station in c)
-              p[station] = c[station];
+            for (var ifname in c)
+              p[ifname] = c[ifname];
 
             return p;
           }, {});
@@ -68,7 +83,7 @@ define([ "vendor/bacon"
         var batadvStream = new Streams.batadv(ip).toProperty({});
 
         var stream = Bacon.combineWith(combine, wifiStream
-                                              , batadvStream
+                                              , batadvStream.map(extractIfname)
                                               , nodesBus.map(".macs")
                                               );
 
@@ -85,27 +100,56 @@ define([ "vendor/bacon"
       }
 
       function combine(wifi, batadv, macs) {
-        var stations = combineWifiBatadv(wifi, batadv);
+        var interfaces = combineWithIfnames(wifi, batadv);
 
-        for (var station in stations) {
-          stations[station].id = station;
-          if (station in macs)
-            stations[station].nodeInfo = macs[station];
+        for (var ifname in interfaces) {
+          var stations = interfaces[ifname];
+          for (var station in stations) {
+            stations[station].id = station;
+
+            if (station in macs)
+              stations[station].nodeInfo = macs[station];
+          }
         }
 
-        return stations;
+        return interfaces;
+      }
+
+      function combineWithIfnames(wifi, batadv) {
+        var ifnames = Object.keys(wifi).concat(Object.keys(batadv));
+
+        // remove duplicates
+        ifnames.filter(function(e, i) {
+          return ifnames.indexOf(e) == i;
+        });
+
+        var out = {};
+
+        ifnames.forEach(function (ifname) {
+          out[ifname] = combineWifiBatadv(wifi[ifname], batadv[ifname]);
+        });
+
+        return out;
       }
 
       function combineWifiBatadv(wifi, batadv) {
+        var out = {};
+
         for (var station in batadv) {
-          if (!(station in wifi))
-            wifi[station] = {}
+          if (!(station in out))
+            out[station] = {};
 
-          for (var a in batadv[station])
-            wifi[station][a] = batadv[station][a];
-          }
+          out[station].batadv = batadv[station];
+        }
 
-        return wifi;
+        for (var station in wifi) {
+          if (!(station in out))
+            out[station] = {};
+
+          out[station].wifi = wifi[station];
+        }
+
+        return out;
       }
 
       Helper.request(ip, "interfaces").then(magic);
