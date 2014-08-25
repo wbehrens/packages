@@ -88,9 +88,10 @@ define([ "vendor/bacon"
                                               );
 
         unsubscribe.push(stream.onValue(function (d) {
-          for (var station in d)
-            if (!("nodeInfo" in d[station]))
-              querierAsk.push(d[station].ifname);
+          for (var ifname in d)
+            for (var station in d[ifname])
+              if (!("nodeInfo" in d[ifname][station]))
+                querierAsk.push(ifname);
         }));
 
         unsubscribe.push(stream.subscribe(sink));
