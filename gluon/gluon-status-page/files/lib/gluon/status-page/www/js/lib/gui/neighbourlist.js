@@ -109,12 +109,8 @@ define([ "lib/helper"
       remove.forEach(function (d) { list.removeChild(d); });
 
       for (var k in d)
-        if (!(k in have)) {
-          var bus = new Bacon.Bus();
-          new ListEntry(list, k, bus, mgmtBus);
-          bus.push(d[k]);
-          bus.plug(stream.map("." + k));
-        }
+        if (!(k in have))
+          new ListEntry(list, k, stream.map("." + k), mgmtBus);
     }
 
 
@@ -164,12 +160,8 @@ define([ "lib/helper"
       remove.forEach(el.removeChild);
 
       for (var k in d)
-        if (!(k in have)) {
-          var bus = new Bacon.Bus();
-          el.appendChild(new Interface(k, bus, mgmtBus));
-          bus.push(d[k]);
-          bus.plug(stream.map("." + k));
-        }
+        if (!(k in have))
+          el.appendChild(new Interface(k, stream.map("." + k), mgmtBus));
     }
 
     function destroy() {
