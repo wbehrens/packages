@@ -7,36 +7,27 @@ define([ "vendor/bacon"
   return function (mgmtBus, nodesBus, ip) {
     var unsubscribe = [];
 
-    function nodeQuerier(bus) {
+    function nodeQuerier() {
       var asked = {};
-      var out = new Bacon.Bus();
       var timeout = 6000;
 
-      bus.subscribe(function (e) {
-        if (e.isEnd())
-          out.end();
+      return function (ifname) {
+        var now = new Date().getTime();
 
-        if (e.hasValue()) {
-          var now = new Date().getTime();
-          var ifname = e.value();
+        if (ifname in asked && now - asked[ifname] < timeout)
+          return Bacon.never();
 
-          if (!(ifname in asked) || now - asked[ifname] > timeout) {
-            asked[ifname] = now;
-            var stream = Streams.nodeInfo(ip, ifname);
-            out.plug(stream.map(function (d) {
-              return { "ifname": ifname
-                     , "nodeInfo": d
-                     };
-            }));
-          }
-        }
-      });
-
-      return out;
+        asked[ifname] = now;
+        return Streams.nodeInfo(ip, ifname).map(function (d) {
+          return { "ifname": ifname
+                 , "nodeInfo": d
+                 };
+        });
+      }
     }
 
     var querierAsk = new Bacon.Bus();
-    var querier = nodeQuerier(querierAsk);
+    var querier = querierAsk.flatMap(nodeQuerier());
     querier.map(".nodeInfo").onValue(mgmtBus, "pushEvent", "nodeinfo");
 
     return Bacon.fromBinder(function (sink) {
