@@ -10,14 +10,7 @@ require([ "vendor/bacon"
     var self = this;
 
     this.pushEvent = function (key, a) {
-      var f = function (a) {
-        return self.push([key].concat(a));
-      }
-
-      if (a !== undefined)
-        return f(a);
-
-      return f;
+      return self.push([key].concat(a));
     }
 
     this.onEvent = function (events) {
@@ -66,11 +59,11 @@ require([ "vendor/bacon"
     var addresses = nodeInfo.network.addresses.filter(function (d) { return !/^fe80:/.test(d) });
     Promise.race(addresses.map(tryIp)).then(
         onEpoch(gotoEpoch, function (d) {
-          mgmtBus.pushEvent("arrived")([nodeInfo, d]);
+          mgmtBus.pushEvent("arrived", [nodeInfo, d]);
         })
       ).catch(
         onEpoch(gotoEpoch, function () {
-          mgmtBus.pushEvent("gotoFailed")(nodeInfo);
+          mgmtBus.pushEvent("gotoFailed", nodeInfo);
         })
       );
   }

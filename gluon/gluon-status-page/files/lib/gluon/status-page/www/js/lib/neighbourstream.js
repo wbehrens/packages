@@ -37,7 +37,7 @@ define([ "vendor/bacon"
 
     var querierAsk = new Bacon.Bus();
     var querier = nodeQuerier(querierAsk);
-    querier.map(".nodeInfo").onValue(mgmtBus.pushEvent("nodeinfo"));
+    querier.map(".nodeInfo").onValue(mgmtBus, "pushEvent", "nodeinfo");
 
     return Bacon.fromBinder(function (sink) {
       function wrapIfname(ifname) {
