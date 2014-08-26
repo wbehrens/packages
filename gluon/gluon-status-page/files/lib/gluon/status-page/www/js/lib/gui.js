@@ -13,8 +13,9 @@ define([ 'lib/gui/nodeinfo'
                    , NeighbourStream
                    ) {
 
-  function Container(parent) {
-    var el = document.createElement("section");
+  function VerticalSplit(parent) {
+    var el = document.createElement("div");
+    el.className = "vertical-split";
     parent.appendChild(el);
 
     el.push = function (child) {
@@ -22,6 +23,7 @@ define([ 'lib/gui/nodeinfo'
       header.appendChild(child.title);
 
       var div = document.createElement("div");
+      div.className = "frame";
       div.node = child;
       div.appendChild(header);
       div.appendChild(child.content);
@@ -104,9 +106,14 @@ define([ 'lib/gui/nodeinfo'
 
     document.body.appendChild(header);
 
+    var container = document.createElement("div");
+    container.className = "container";
+
+    document.body.appendChild(container);
+
     setTitle();
 
-    var content = new Container(document.body);
+    var content = new VerticalSplit(container);
 
     function nodeChanged(nodeInfo) {
       setTitle(nodeInfo, "connect");
