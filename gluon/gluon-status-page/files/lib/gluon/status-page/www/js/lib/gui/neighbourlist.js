@@ -157,7 +157,7 @@ define([ "lib/helper"
         }
       }
 
-      remove.forEach(el.removeChild);
+      remove.forEach(function (d) { el.removeChild(d); });
 
       for (var k in d)
         if (!(k in have))
