@@ -72,13 +72,12 @@ h3 {
 .container {
   max-width: 90vw;
   margin: 64px auto 24px auto;
-  background: rgb(255, 255, 255);
+  background: rgb(253, 253, 253);
   box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.19), 0px 3px 6px rgba(0, 0, 0, 0.23);
 }
 
 .container .frame {
   box-sizing: border-box;
-  background: rgba(0, 0, 0, 0.01);
 }
 
 .vertical-split {
