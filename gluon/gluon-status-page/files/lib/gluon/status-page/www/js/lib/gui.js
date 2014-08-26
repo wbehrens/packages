@@ -5,14 +5,14 @@ define([ 'lib/gui/nodeinfo'
        , 'lib/gui/menu'
        , 'lib/streams'
        , 'lib/neighbourstream'
-       , 'vendor/velocity'
+       , 'vendor/d3'
        ], function ( NodeInfo
                    , Statistics
                    , NeighbourList
                    , Menu
                    , Streams
                    , NeighbourStream
-                   , Velocity
+                   , d3
                    ) {
 
   function VerticalSplit(parent) {
@@ -100,7 +100,15 @@ define([ 'lib/gui/nodeinfo'
       }
 
       function scrollTo(o) {
-        Velocity(o, "scroll", { container: children, axis: "x", offset: -children.offsetLeft, duration: 300});
+        var offset = o.offsetLeft - children.offsetLeft;
+        d3.select(children).transition().tween("scrollLeft", scrollTween(offset));
+      }
+
+      function scrollTween(offset) {
+        return function() {
+          var i = d3.interpolateNumber(this.scrollLeft, offset);
+          return function(t) { this.scrollLeft = i(t) }
+        }
       }
 
       window.addEventListener('resize', resize, false);
