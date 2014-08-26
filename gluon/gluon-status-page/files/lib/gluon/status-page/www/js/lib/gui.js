@@ -5,12 +5,14 @@ define([ 'lib/gui/nodeinfo'
        , 'lib/gui/menu'
        , 'lib/streams'
        , 'lib/neighbourstream'
+       , 'vendor/velocity'
        ], function ( NodeInfo
                    , Statistics
                    , NeighbourList
                    , Menu
                    , Streams
                    , NeighbourStream
+                   , Velocity
                    ) {
 
   function VerticalSplit(parent) {
@@ -40,6 +42,88 @@ define([ 'lib/gui/nodeinfo'
       while (el.firstChild) {
         el.firstChild.node.destroy();
         el.removeChild(el.firstChild);
+      }
+    }
+
+    return el;
+  }
+
+  function Tabs(parent) {
+    var el = document.createElement("div");
+    el.className = "tabbed";
+
+    var bar = document.createElement("ul");
+    bar.className = "bar";
+
+    el.appendChild(bar);
+
+    var children = document.createElement("ul");
+    children.className = "children";
+
+    el.appendChild(children);
+
+    parent.appendChild(el);
+
+    var active;
+
+    el.push = function (child) {
+      var header = document.createElement("li");
+      header.appendChild(child.title);
+
+      bar.appendChild(header);
+
+      var frame = document.createElement("li");
+      frame.className = "frame";
+      frame.node = child;
+      frame.appendChild(child.content);
+      frame.header = header;
+      header.frame = frame;
+
+      children.appendChild(frame);
+
+      if (bar.childNodes.length == 1) {
+        header.className = "active";
+        active = frame;
+      }
+
+      header.onclick = function (e) {
+        focus(this.frame);
+      }
+
+      function focus(o) {
+        for (var i = 0; i < bar.childNodes.length; i++)
+          bar.childNodes.item(i).classList.remove("active");
+
+        frame.header.classList.add("active");
+        scrollTo(o);
+        active = o;
+      }
+
+      function scrollTo(o) {
+        Velocity(o, "scroll", { container: children, axis: "x", offset: -children.offsetLeft, duration: 300});
+      }
+
+      window.addEventListener('resize', resize, false);
+
+      function resize(e) {
+        var offset = active.offsetLeft - children.offsetLeft;
+        children.scrollLeft = offset;
+      }
+
+      return function () {
+        frame.node.destroy();
+        bar.removeChild(header);
+        children.removeChild(frame);
+      }
+    }
+
+    el.clear = function () {
+      while (bar.firstChild)
+        bar.removeChild(bar.firstChild);
+
+      while (children.firstChild) {
+        children.firstChild.node.destroy();
+        children.removeChild(children.firstChild);
       }
     }
 
@@ -113,7 +197,7 @@ define([ 'lib/gui/nodeinfo'
 
     setTitle();
 
-    var content = new VerticalSplit(container);
+    var content = new Tabs(container);
 
     function nodeChanged(nodeInfo) {
       setTitle(nodeInfo, "connect");

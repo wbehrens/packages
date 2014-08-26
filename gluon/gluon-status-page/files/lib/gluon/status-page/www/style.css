@@ -95,6 +95,45 @@ h3 {
   border-width: 0 0 0 1px;
 }
 
+.tabbed .bar {
+  display: flex;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.tabbed .bar li {
+  display: block;
+  flex: 1;
+  padding: 12px 12px 10px;
+  text-align: center;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.54);
+}
+
+.tabbed .bar li.active {
+  color: rgba(0, 0, 0, 0.87);
+  border-color: #dc0067;
+}
+
+.tabbed .bar li:hover {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+.tabbed .children {
+  display: block;
+  overflow-x: hidden;
+  white-space: nowrap;
+}
+
+.tabbed .children > .frame {
+  padding-top: 16px;
+  vertical-align: top;
+  display: inline-block;
+  white-space: normal;
+  width: 100%;
+  height: 100%;
+}
+
 dl, pre {
   padding: 0 16px 16px;
 }
