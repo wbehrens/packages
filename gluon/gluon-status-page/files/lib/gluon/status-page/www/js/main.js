@@ -57,15 +57,24 @@ require([ "vendor/bacon"
     gotoEpoch++;
 
     var addresses = nodeInfo.network.addresses.filter(function (d) { return !/^fe80:/.test(d) });
-    Promise.race(addresses.map(tryIp)).then(
-        onEpoch(gotoEpoch, function (d) {
+    var race = Bacon.fromArray(addresses).flatMap(function (d) {
+      return Bacon.fromPromise(tryIp(d));
+    }).withStateMachine([], function (acc, ev) {
+      if (ev.isError())
+        return [acc.concat(ev.error), []];
+      else if (ev.isEnd() && acc.length > 0)
+        return [undefined, [new Bacon.Error(acc), ev]];
+      else if (ev.hasValue())
+        return [[], [ev, new Bacon.End()]];
+    });
+
+    race.onValue(onEpoch(gotoEpoch, function (d) {
           mgmtBus.pushEvent("arrived", [nodeInfo, d]);
-        })
-      ).catch(
-        onEpoch(gotoEpoch, function () {
+        }));
+
+    race.onError(onEpoch(gotoEpoch, function () {
           mgmtBus.pushEvent("gotoFailed", nodeInfo);
-        })
-      );
+        }));
   }
 
   function scanNodeInfo(a, nodeInfo) {
