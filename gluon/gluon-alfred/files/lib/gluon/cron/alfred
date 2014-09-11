@@ -1,2 +1,3 @@
 * * * * * /lib/gluon/announce/announce.lua nodeinfo | gzip | alfred -s 158
 * * * * * /lib/gluon/announce/announce.lua statistics | gzip | alfred -s 159
+* * * * * /lib/gluon/announce/announce.lua neighbours | gzip | alfred -s 160
